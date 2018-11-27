@@ -1,0 +1,16 @@
+---
+kind: pipeline
+name: test-on-amd64
+
+platform:
+  arch: amd64
+
+steps:
+- name: build
+  image: ubuntu:latest
+  commands:
+  - apt-get update && apt-get upgrade -y && apt-get install -y 
+    build-essential pkg-config libc6-dev m4 g++-multilib 
+    autoconf libtool ncurses-dev unzip git python python-zmq 
+    zlib1g-dev wget curl bsdmainutils automake
+  - ./zcutil/build.sh -j$(nproc)
