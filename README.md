@@ -2,6 +2,8 @@ Zcash 2.0.2-rc1
 <img align="right" width="120" height="80" src="doc/imgs/logo.png">
 ===========
 
+[![Build Status](https://cloud.drone.io/api/badges/garethtdavies/zcash/status.svg)](https://cloud.drone.io/garethtdavies/zcash)
+
 What is Zcash?
 --------------
 
