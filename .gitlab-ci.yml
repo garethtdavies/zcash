@@ -8,7 +8,7 @@ stages:
 
 # Complete the Linux build
 # Docker needs IPv6 support to complete the test suite
-build:linux-x64:
+.build:linux-x64:
   stage: build
   image: registry.gitlab.com/garethtdavies/zcash/ubuntu18-04
   script:
@@ -40,7 +40,7 @@ build:linux-x64:
     expire_in: 1 week
 
 # Complete the Windows cross-compile
-build:linux-windows:
+.build:linux-windows:
   stage: build
   image: registry.gitlab.com/garethtdavies/zcash/ubuntu18-04
   #tags: 
@@ -57,7 +57,7 @@ build:linux-windows:
     expire_in: 1 week
 
 # Complete ARM cross-compile
-build:arm-x64:
+.build:arm-x64:
   stage: build
   image: registry.gitlab.com/garethtdavies/zcash/ubuntu18-04
   script:
@@ -84,6 +84,7 @@ build:macos:
     - macos
   script: 
     - ./zcutil/build.sh -j$(nproc)
+    - ./qa/zcash/full_test_suite.py
     - mkdir -p builds/macos
     - cp ./src/{zcash-cli,zcash-gtest,zcash-tx,zcashd} ./builds/macos
   artifacts: # This will cause issues as same name as Linux builds
