@@ -2,6 +2,8 @@ Zcash 2.0.2
 <img align="right" width="120" height="80" src="doc/imgs/logo.png">
 ===========
 
+[![pipeline status](https://gitlab.com/garethtdavies/zcash/badges/master/pipeline.svg)](https://gitlab.com/garethtdavies/zcash/commits/master)
+
 What is Zcash?
 --------------
 

@@ -1,0 +1,105 @@
+# A test implementation of a zcashd CI pipeline for research purposes
+# Uploads built binaries as artifacts on each commit and also deploys to S3
+---
+
+stages:
+  - build
+  - deploy
+
+# Complete the Linux build
+# Docker needs IPv6 support to complete the test suite
+build:linux-x64:
+  stage: build
+  image: registry.gitlab.com/garethtdavies/zcash/ubuntu18-04
+  script:
+    - nproc # informational
+    - ./zcutil/build.sh -j$(nproc)
+    #- pyflakes qa src zcutil
+    #- ./zcutil/fetch-params.sh
+    #- ./qa/zcash/full_test_suite.py --list-stages
+    #- ./qa/zcash/full_test_suite.py btest
+    #- ./qa/zcash/full_test_suite.py gtest
+    #- ./qa/zcash/full_test_suite.py sec-hard
+    #- ./qa/zcash/full_test_suite.py no-dot-so
+    #- ./qa/zcash/full_test_suite.py util-test
+    #- ./qa/zcash/full_test_suite.py secp256k1
+    #- ./qa/zcash/full_test_suite.py libsnark
+    #- ./qa/zcash/full_test_suite.py univalue
+    #- ./qa/zcash/full_test_suite.py rpc
+    # Move the built files so we can have each platform
+    - mkdir -p builds/linux-x64
+    - cp ./src/{zcash-cli,zcash-gtest,zcash-tx,zcashd} ./builds/linux-x64
+  # Could restrict this to e.g. only tagged releases
+  #only:
+  #  - gitlab
+  artifacts:
+    name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+    paths:
+      - builds/linux-x64
+    when: on_success
+    expire_in: 1 week
+
+# Complete the Windows cross-compile
+build:linux-windows:
+  stage: build
+  image: registry.gitlab.com/garethtdavies/zcash/ubuntu18-04
+  #tags: 
+  #  - docker
+  script:
+    - HOST=x86_64-w64-mingw32 ./zcutil/build.sh -j$(nproc)
+    - mkdir -p builds/windows-xcompile
+    - cp ./src/{zcash-cli.exe,zcash-gtest.exe,zcash-tx.exe,zcashd.exe} ./builds/windows-xcompile
+  artifacts:
+    name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+    paths: 
+      - builds/windows-xcompile
+    when: on_success
+    expire_in: 1 week
+
+# Complete ARM cross-compile
+build:arm-x64:
+  stage: build
+  image: registry.gitlab.com/garethtdavies/zcash/ubuntu18-04
+  script:
+    - HOST=arm-linux-gnueabihf ./zcutil/build.sh -j$(nproc)
+    - mkdir -p builds/arm
+    - cp ./src/{zcash-cli,zcash-gtest,zcash-tx,zcashd} ./builds/arm
+  artifacts:
+    name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+    paths:
+      - builds/arm
+    when: on_success
+    expire_in: 1 week
+
+# build on windows natively
+# tag windows
+# .build:windows
+
+# Complete the native MacOS build
+# Runs on dedicated Mac runner with shell executor (not Docker)
+# Needs to have dependencies installed as per https://zcash.readthedocs.io/en/latest/rtd_pages/user_guide.html
+build:macos:
+  stage: build
+  tags:
+    - macos
+  script: 
+    - ./zcutil/build.sh -j$(nproc)
+    - mkdir -p builds/macos
+    - cp ./src/{zcash-cli,zcash-gtest,zcash-tx,zcashd} ./builds/macos
+  artifacts: # This will cause issues as same name as Linux builds
+    name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+    paths:
+      - builds/macos
+    when: on_success
+    expire_in: 1 week  
+
+# build on a different linux distro e.g. Debian, RHEL, Ubuntu xenial
+# .build linux-debian
+
+# Upload the completed binaries to S3 so always have latest binaries for each commit
+deploy_job:
+  stage: deploy
+  image: governmentpaas/awscli
+  script: 
+    - aws s3 cp ./builds s3://zcash-gitlab-binaries/$CI_PIPELINE_ID-$CI_COMMIT_SHA-$CI_COMMIT_REF_SLUG/ --recursive
+  when: on_success
