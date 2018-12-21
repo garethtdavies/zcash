@@ -8,23 +8,23 @@ stages:
 
 # Complete the Linux build
 # Docker needs IPv6 support to complete the test suite
-.build:linux-x64:
+build:linux-x64:
   stage: build
   image: registry.gitlab.com/garethtdavies/zcash/ubuntu18-04
   script:
     - nproc # informational
     - ./zcutil/build.sh -j$(nproc)
-    #- pyflakes qa src zcutil
-    #- ./zcutil/fetch-params.sh
-    #- ./qa/zcash/full_test_suite.py --list-stages
-    #- ./qa/zcash/full_test_suite.py btest
-    #- ./qa/zcash/full_test_suite.py gtest
-    #- ./qa/zcash/full_test_suite.py sec-hard
-    #- ./qa/zcash/full_test_suite.py no-dot-so
-    #- ./qa/zcash/full_test_suite.py util-test
-    #- ./qa/zcash/full_test_suite.py secp256k1
-    #- ./qa/zcash/full_test_suite.py libsnark
-    #- ./qa/zcash/full_test_suite.py univalue
+    - pyflakes qa src zcutil
+    - ./zcutil/fetch-params.sh
+    - ./qa/zcash/full_test_suite.py --list-stages
+    - ./qa/zcash/full_test_suite.py btest
+    - ./qa/zcash/full_test_suite.py gtest
+    - ./qa/zcash/full_test_suite.py sec-hard
+    - ./qa/zcash/full_test_suite.py no-dot-so
+    - ./qa/zcash/full_test_suite.py util-test
+    - ./qa/zcash/full_test_suite.py secp256k1
+    - ./qa/zcash/full_test_suite.py libsnark
+    - ./qa/zcash/full_test_suite.py univalue
     #- ./qa/zcash/full_test_suite.py rpc
     # Move the built files so we can have each platform
     - mkdir -p builds/linux-x64
@@ -40,7 +40,7 @@ stages:
     expire_in: 1 week
 
 # Complete the Windows cross-compile
-.build:linux-windows:
+build:linux-windows:
   stage: build
   image: registry.gitlab.com/garethtdavies/zcash/ubuntu18-04
   #tags: 
@@ -78,7 +78,7 @@ stages:
 # Complete the native MacOS build
 # Runs on dedicated Mac runner with shell executor (not Docker)
 # Needs to have dependencies installed as per https://zcash.readthedocs.io/en/latest/rtd_pages/user_guide.html
-build:macos:
+.build:macos:
   stage: build
   tags:
     - macos
