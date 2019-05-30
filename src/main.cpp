@@ -3779,8 +3779,8 @@ bool CheckBlock(const CBlock& block, CValidationState& state,
             return state.DoS(100, error("CheckBlock(): more than one coinbase"),
                              REJECT_INVALID, "bad-cb-multiple");
 
-    // If this is initial block download and "verifypowonly" is set, we'll skip verifying the transactions
-    if (IsInitialBlockDownload(chainparams) && GetBoolArg("-verifypowonly", false)) {
+    // If this is initial block download and "ibdskiptxverification" is set, we'll skip verifying the transactions
+    if (IsInitialBlockDownload(chainparams) && GetBoolArg("-ibdskiptxverification", false)) {
         return true;
     }
 
@@ -3930,12 +3930,13 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIn
         }
     }
 
-    // If this is initial block download and "verifypowonly" is set, we'll skip verifying the transactions
-    if (IsInitialBlockDownload(chainparams) && GetBoolArg("-verifypowonly", false)) {
+    // If this is initial block download and "ibdskiptxverification" is set, we'll skip verifying the transactions
+    if (IsInitialBlockDownload(chainparams) && GetBoolArg("-ibdskiptxverification", false)) {
+        // If checkpoints are enabled, then skip verification only upto the last checkpoint.
         if (fCheckpointsEnabled) {
             CBlockIndex *pindexLastCheckpoint = Checkpoints::GetLastCheckpoint(chainparams.Checkpoints());
             if (pindexLastCheckpoint && pindexLastCheckpoint->GetAncestor(pindexPrev->nHeight) == pindexPrev) {
-                // This block is connecting to an ancestor of a checkpoint: disable script checks
+                // This block is connecting to an ancestor of a checkpoint: skip the Tx checks.
                 return true;
             }
         }
