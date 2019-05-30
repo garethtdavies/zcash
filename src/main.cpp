@@ -3780,7 +3780,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state,
                              REJECT_INVALID, "bad-cb-multiple");
 
     // If this is initial block download and "verifypowonly" is set, we'll skip verifying the transactions
-    if (IsInitialBlockDownload() && GetBoolArg("-verifypowonly", false)) {
+    if (IsInitialBlockDownload(chainparams) && GetBoolArg("-verifypowonly", false)) {
         return true;
     }
 
@@ -3931,7 +3931,7 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIn
     }
 
     // If this is initial block download and "verifypowonly" is set, we'll skip verifying the transactions
-    if (IsInitialBlockDownload() && GetBoolArg("-verifypowonly", false)) {
+    if (IsInitialBlockDownload(chainparams) && GetBoolArg("-verifypowonly", false)) {
         return true;
     }
 
