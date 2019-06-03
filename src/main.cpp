@@ -3933,12 +3933,9 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIn
     // If this is initial block download and "ibdskiptxverification" is set, we'll skip verifying the transactions
     if (IsInitialBlockDownload(chainparams) && GetBoolArg("-ibdskiptxverification", false)) {
         // If checkpoints are enabled, then skip verification only upto the last checkpoint.
-        if (fCheckpointsEnabled) {
-            CBlockIndex *pindexLastCheckpoint = Checkpoints::GetLastCheckpoint(chainparams.Checkpoints());
-            if (pindexLastCheckpoint && pindexLastCheckpoint->GetAncestor(pindexPrev->nHeight) == pindexPrev) {
-                // This block is connecting to an ancestor of a checkpoint: skip the Tx checks.
+        if (fCheckpointsEnabled && 
+            nHeight < Checkpoints::GetTotalBlocksEstimate(chainparams.Checkpoints())) {
                 return true;
-            }
         }
     }
 
