@@ -3779,6 +3779,11 @@ bool CheckBlock(const CBlock& block, CValidationState& state,
             return state.DoS(100, error("CheckBlock(): more than one coinbase"),
                              REJECT_INVALID, "bad-cb-multiple");
 
+    // If this is initial block download and "verifypowonly" is set, we'll skip verifying the transactions
+    if (IsInitialBlockDownload() && GetBoolArg("-verifypowonly", false)) {
+        return true;
+    }
+
     // Check transactions
     BOOST_FOREACH(const CTransaction& tx, block.vtx)
         if (!CheckTransaction(tx, state, verifier))
@@ -3922,6 +3927,28 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIn
 
         if (!found) {
             return state.DoS(100, error("%s: YCash reward missing", __func__), REJECT_INVALID, "cb-no-founders-reward");
+        }
+    }
+
+    // If this is initial block download and "verifypowonly" is set, we'll skip verifying the transactions
+    if (IsInitialBlockDownload() && GetBoolArg("-verifypowonly", false)) {
+        return true;
+    }
+
+    // Check that all transactions are finalized
+    BOOST_FOREACH(const CTransaction& tx, block.vtx) {
+
+        // Check transaction contextually against consensus rules at block height
+        if (!ContextualCheckTransaction(tx, state, chainparams, nHeight, 100)) {
+            return false; // Failure reason has been set in validation state object
+        }
+
+        int nLockTimeFlags = 0;
+        int64_t nLockTimeCutoff = (nLockTimeFlags & LOCKTIME_MEDIAN_TIME_PAST)
+                                ? pindexPrev->GetMedianTimePast()
+                                : block.GetBlockTime();
+        if (!IsFinalTx(tx, nHeight, nLockTimeCutoff)) {
+            return state.DoS(10, error("%s: contains a non-final transaction", __func__), REJECT_INVALID, "bad-txns-nonfinal");
         }
     }
 
