@@ -3,8 +3,8 @@ name: "zcash-2.0.6"
 enable_cache: true
 distro: "debian"
 suites:
-- "jessie"
 - "stretch"
+- "jessie"
 architectures:
 - "amd64"
 packages:
