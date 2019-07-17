@@ -17,14 +17,8 @@ import json
 import io
 from decimal import Decimal
 
-try:
-    import http.client as httplib
-except ImportError:
-    import http.client
-try:
-    import urllib.parse as urlparse
-except ImportError:
-    import urllib.parse
+import http.client
+import urllib.parse
 
 def deser_uint256(f):
     r = 0
@@ -41,7 +35,7 @@ def http_get_call(host, port, path, response_object = 0):
     if response_object:
         return conn.getresponse()
 
-    return conn.getresponse().read()
+    return conn.getresponse().read().decode("utf-8")
 
 # allows simple http post calls with a request body
 def http_post_call(host, port, path, requestdata = '', response_object = 0):
@@ -149,7 +143,7 @@ class RESTTest (BitcoinTestFramework):
         binaryRequest += struct.pack("i", 0);
 
         bin_response = http_post_call(url.hostname, url.port, '/rest/getutxos'+self.FORMAT_SEPARATOR+'bin', binaryRequest)
-        output = io.StringIO()
+        output = io.BytesIO()
         output.write(bin_response)
         output.seek(0)
         chainHeight = struct.unpack("i", output.read(4))[0]
