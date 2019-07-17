@@ -34,18 +34,13 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-try:
-    import http.client as httplib
-except ImportError:
-    import httplib
+from http import HTTPStatus
+import http.client
 import base64
 import decimal
 import json
 import logging
-try:
-    import urllib.parse as urlparse
-except ImportError:
-    import urlparse
+import urllib.parse
 
 USER_AGENT = "AuthServiceProxy/0.1"
 
@@ -61,20 +56,21 @@ class JSONRPCException(Exception):
 
 def EncodeDecimal(o):
     if isinstance(o, decimal.Decimal):
-        return round(o, 8)
+        return str(o)
     raise TypeError(repr(o) + " is not JSON serializable")
 
-class AuthServiceProxy(object):
+class AuthServiceProxy():
     __id_count = 0
 
     def __init__(self, service_url, service_name=None, timeout=HTTP_TIMEOUT, connection=None):
         self.__service_url = service_url
         self.__service_name = service_name
-        self.__url = urlparse.urlparse(service_url)
+        self.__url = urllib.parse.urlparse(service_url)
         if self.__url.port is None:
             port = 80
         else:
             port = self.__url.port
+        
         (user, passwd) = (self.__url.username, self.__url.password)
         try:
             user = user.encode('utf8')
@@ -87,17 +83,21 @@ class AuthServiceProxy(object):
         authpair = user + b':' + passwd
         self.__auth_header = b'Basic ' + base64.b64encode(authpair)
 
-        if connection:
-            # Callables re-use the connection of the original proxy
-            self.__conn = connection
-        elif self.__url.scheme == 'https':
-            self.__conn = httplib.HTTPSConnection(self.__url.hostname, port,
-                                                  None, None, False,
-                                                  timeout)
-        else:
-            self.__conn = httplib.HTTPConnection(self.__url.hostname, port,
-                                                 False, timeout)
+        self.timeout = timeout
+        self._set_conn(connection)
 
+    def _set_conn(self, connection=None):
+        port = 80 if self.__url.port is None else self.__url.port
+        if connection:
+            self.__conn = connection
+            self.timeout = connection.timeout
+        elif self.__url.scheme == 'https':
+            self.__conn = http.client.HTTPSConnection(self.__url.hostname, port, timeout=self.timeout)
+        else:
+            self.__conn = http.client.HTTPConnection(self.__url.hostname, port, timeout=self.timeout)
+
+
+   
     def __getattr__(self, name):
         if name.startswith('__') and name.endswith('__'):
             # Python internal stuff
@@ -105,7 +105,7 @@ class AuthServiceProxy(object):
         if self.__service_name is not None:
             name = "%s.%s" % (self.__service_name, name)
         return AuthServiceProxy(self.__service_url, name, connection=self.__conn)
-
+   
     def _request(self, method, path, postdata):
         '''
         Do a HTTP request, with retry if we get disconnected (e.g. due to a timeout).
@@ -123,7 +123,7 @@ class AuthServiceProxy(object):
             # Python 3.5+ raises BrokenPipeError instead of BadStatusLine when the connection was reset.
             # ConnectionResetError happens on FreeBSD with Python 3.4.
             # These classes don't exist in Python 2.x, so we can't refer to them directly.
-            if ((isinstance(e, httplib.BadStatusLine) and e.line == "''")
+            if ((isinstance(e, http.client.BadStatusLine) and e.line == "''")
                 or e.__class__.__name__ in ('BrokenPipeError', 'ConnectionResetError')):
                 self.__conn.close()
                 self.__conn.request(method, path, postdata, headers)
