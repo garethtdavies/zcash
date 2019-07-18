@@ -56,7 +56,7 @@ class JSONRPCException(Exception):
 
 def EncodeDecimal(o):
     if isinstance(o, decimal.Decimal):
-        return str(o)
+        return float(o)
     raise TypeError(repr(o) + " is not JSON serializable")
 
 class AuthServiceProxy():
