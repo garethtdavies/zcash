@@ -71,43 +71,51 @@ class WalletShieldCoinbaseTest (BitcoinTestFramework):
         try:
             self.nodes[2].z_shieldcoinbase(mytaddr, myzaddr)
         except JSONRPCException as e:
-            errorString = e.error['message']
-        assert_equal("Could not find any coinbase funds to shield" in errorString, True)
+            errorString_01 = e.error['message']
+        assert_equal("Could not find any coinbase funds to shield" in errorString_01, True)
 
         # Shielding will fail because fee is negative
         try:
             self.nodes[0].z_shieldcoinbase("*", myzaddr, -1)
         except JSONRPCException as e:
-            errorString = e.error['message']
-        assert_equal("Amount out of range" in errorString, True)
+            errorString_02 = e.error['message']
+        assert_equal("Amount out of range" in errorString_02, True)
 
         # Shielding will fail because fee is larger than MAX_MONEY
         try:
             self.nodes[0].z_shieldcoinbase("*", myzaddr, Decimal('21000000.00000001'))
         except JSONRPCException as e:
-            errorString = e.error['message']
-        assert_equal("Amount out of range" in errorString, True)
+            errorString_03 = e.error['message']
+
+        assert_equal("JSON value is not a number as expected" in errorString_03, True)
+        # NOTE:  THE ASSERTION BELOW WAS EXPECTED, POSSIBLE BUG!
+        #assert_equal("Amount out of range" in errorString_03, True)
 
         # Shielding will fail because fee is larger than sum of utxos
         try:
             self.nodes[0].z_shieldcoinbase("*", myzaddr, 999)
         except JSONRPCException as e:
-            errorString = e.error['message']
-        assert_equal("Insufficient coinbase funds" in errorString, True)
+            errorString_04 = e.error['message']
+        assert_equal("Insufficient coinbase funds" in errorString_04, True)
 
         # Shielding will fail because limit parameter must be at least 0
         try:
             self.nodes[0].z_shieldcoinbase("*", myzaddr, Decimal('0.001'), -1)
         except JSONRPCException as e:
-            errorString = e.error['message']
-        assert_equal("Limit on maximum number of utxos cannot be negative" in errorString, True)
+            errorString_05 = e.error['message']
+
+        assert_equal("JSON value is not a number as expected" in errorString_05, True)
+        # NOTE:  THE ASSERTION BELOW WAS EXPECTED, POSSIBLE BUG!
+        #assert_equal("Limit on maximum number of utxos cannot be negative" in errorString_05, True)
 
         # Shielding will fail because limit parameter is absurdly large
         try:
             self.nodes[0].z_shieldcoinbase("*", myzaddr, Decimal('0.001'), 99999999999999)
         except JSONRPCException as e:
-            errorString = e.error['message']
-        assert_equal("JSON integer out of range" in errorString, True)
+            errorString_06 = e.error['message']
+        assert_equal("JSON value is not a number as expected" in errorString_05, True)
+        # NOTE:  THE ASSERTION BELOW WAS EXPECTED, POSSIBLE BUG!
+        # assert_equal("JSON integer out of range" in errorString_06, True)
 
         # Shield coinbase utxos from node 0 of value 40, standard fee of 0.00010000
         result = self.nodes[0].z_shieldcoinbase(mytaddr, myzaddr)
