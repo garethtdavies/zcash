@@ -71,6 +71,7 @@ class ProtonTest (BitcoinTestFramework):
 
         # Launch proton server in background thread
         # It terminates after receiving numblocks * 2 messages (one for coinbase, one for block)
+        print("Do we get here?")
         self.server = Server("127.0.0.1:%i" % self.port, self.numblocks * 2)
         self.container = Container(self.server)
         self.t1 = threading.Thread(target=self.container.run)
@@ -85,13 +86,15 @@ class ProtonTest (BitcoinTestFramework):
             ])
 
     def run_test(self):
+        print("self.numblocks is: %s" % self.numblocks)
         self.sync_all()
         baseheight = self.nodes[0].getblockcount()    # 200 blocks already mined
 
         # generate some blocks
-        self.nodes[0].generate(self.numblocks/2)
+        self.nodes[0].generate(self.numblocks//2)
         self.sync_all()
-        self.nodes[1].generate(self.numblocks/2)
+        self.nodes[1].generate(self.numblocks//2)
+        print("About to run self.sync_all()")
         self.sync_all()
 
         # wait for server to finish
