@@ -38,7 +38,7 @@ from http import HTTPStatus
 import http.client
 import base64
 import decimal
-import json
+from pyutil import jsonutil as json
 import logging
 import urllib.parse
 
@@ -53,11 +53,6 @@ class JSONRPCException(Exception):
         Exception.__init__(self)
         self.error = rpc_error
 
-
-def EncodeDecimal(o):
-    if isinstance(o, decimal.Decimal):
-        return float(o)
-    raise TypeError(repr(o) + " is not JSON serializable")
 
 class AuthServiceProxy():
     __id_count = 0
@@ -135,11 +130,11 @@ class AuthServiceProxy():
         AuthServiceProxy.__id_count += 1
 
         log.debug("-%s-> %s %s"%(AuthServiceProxy.__id_count, self.__service_name,
-                                 json.dumps(args, default=EncodeDecimal)))
+                                 json.dumps(args)))
         postdata = json.dumps({'version': '1.1',
                                'method': self.__service_name,
                                'params': args,
-                               'id': AuthServiceProxy.__id_count}, default=EncodeDecimal)
+                               'id': AuthServiceProxy.__id_count})
         response = self._request('POST', self.__url.path, postdata)
         if response['error'] is not None:
             raise JSONRPCException(response['error'])
@@ -150,7 +145,7 @@ class AuthServiceProxy():
             return response['result']
 
     def _batch(self, rpc_call_list):
-        postdata = json.dumps(list(rpc_call_list), default=EncodeDecimal)
+        postdata = json.dumps(list(rpc_call_list))
         log.debug("--> "+postdata)
         return self._request('POST', self.__url.path, postdata)
 
@@ -163,7 +158,7 @@ class AuthServiceProxy():
         responsedata = http_response.read().decode('utf8')
         response = json.loads(responsedata, parse_float=decimal.Decimal)
         if "error" in response and response["error"] is None:
-            log.debug("<-%s- %s"%(response["id"], json.dumps(response["result"], default=EncodeDecimal)))
+            log.debug("<-%s- %s"%(response["id"], json.dumps(response["result"])))
         else:
             log.debug("<-- "+responsedata)
         return response
