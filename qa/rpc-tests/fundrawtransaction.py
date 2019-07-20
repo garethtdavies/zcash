@@ -33,7 +33,7 @@ class RawTransactionsTest(BitcoinTestFramework):
 
     def run_test(self):
         print("Mining blocks...")
-        feeTolerance = Decimal(0.00000002) #if the fee's positive delta is higher than this value tests will fail, neg. delta always fail the tests
+        feeTolerance = Decimal("0.00000002") #if the fee's positive delta is higher than this value tests will fail, neg. delta always fail the tests
 
         self.nodes[2].generate(1)
         self.sync_all()
@@ -145,7 +145,6 @@ class RawTransactionsTest(BitcoinTestFramework):
                 break;
 
         assert_equal(utx!=False, True)
-
         inputs  = [ {'txid' : utx['txid'], 'vout' : utx['vout']}]
         outputs = { self.nodes[0].getnewaddress() : Decimal(5.0) - fee - feeTolerance }
         rawtx   = self.nodes[2].createrawtransaction(inputs, outputs)
