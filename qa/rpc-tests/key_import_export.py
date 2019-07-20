@@ -41,11 +41,8 @@ class KeyImportExportTest (BitcoinTestFramework):
 
         def verify_utxos(node, amounts):
             utxos = node.listunspent(1, 10**9, [addr])
-
-            def cmp_confirmations_high_to_low(a, b):
-                return cmp(b["confirmations"], a["confirmations"])
-
-            utxos.sort(cmp_confirmations_high_to_low)
+            utxos.sort(key=lambda x: x["confirmations"])
+            utxos.reverse()
 
             try:
                 assert_equal(amounts, [utxo["amount"] for utxo in utxos])
