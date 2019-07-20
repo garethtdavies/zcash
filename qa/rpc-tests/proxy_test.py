@@ -81,7 +81,10 @@ class ProxyTest(BitcoinTestFramework):
         assert(isinstance(cmd, Socks5Command))
         # Note: bitcoind's SOCKS5 implementation only sends atyp DOMAINNAME, even if connecting directly to IPv4/IPv6
         assert_equal(cmd.atyp, AddressType.DOMAINNAME)
-        assert_equal(cmd.addr, "15.61.23.23")
+        print("cmd.addr: %s" % cmd.addr)
+        t_cmd_addr = type(cmd.addr)
+        print("type(cmd.addr): %s" % t_cmd_addr)
+        assert_equal(cmd.addr, str(bytearray("15.61.23.23", encoding="utf-8")))
         assert_equal(cmd.port, 1234)
         if not auth:
             assert_equal(cmd.username, None)
@@ -94,7 +97,7 @@ class ProxyTest(BitcoinTestFramework):
         assert(isinstance(cmd, Socks5Command))
         # Note: bitcoind's SOCKS5 implementation only sends atyp DOMAINNAME, even if connecting directly to IPv4/IPv6
         assert_equal(cmd.atyp, AddressType.DOMAINNAME)
-        assert_equal(cmd.addr, "1233:3432:2434:2343:3234:2345:6546:4534")
+        assert_equal(cmd.addr, str(bytearray("1233:3432:2434:2343:3234:2345:6546:4534", encoding="utf-8")))
         assert_equal(cmd.port, 5443)
         if not auth:
             assert_equal(cmd.username, None)
@@ -107,7 +110,7 @@ class ProxyTest(BitcoinTestFramework):
             cmd = proxies[2].queue.get()
             assert(isinstance(cmd, Socks5Command))
             assert_equal(cmd.atyp, AddressType.DOMAINNAME)
-            assert_equal(cmd.addr, "bitcoinostk4e4re.onion")
+            assert_equal(cmd.addr, str(bytearray("bitcoinostk4e4re.onion", encoding="utf-8")))
             assert_equal(cmd.port, 8333)
             if not auth:
                 assert_equal(cmd.username, None)
@@ -119,7 +122,7 @@ class ProxyTest(BitcoinTestFramework):
         cmd = proxies[3].queue.get()
         assert(isinstance(cmd, Socks5Command))
         assert_equal(cmd.atyp, AddressType.DOMAINNAME)
-        assert_equal(cmd.addr, "node.noumenon")
+        assert_equal(cmd.addr, str(bytearray("node.noumenon", encoding="utf-8")))
         assert_equal(cmd.port, 8333)
         if not auth:
             assert_equal(cmd.username, None)
