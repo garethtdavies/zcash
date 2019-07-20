@@ -146,7 +146,7 @@ class ZkeyImportExportTest (BitcoinTestFramework):
         verify_utxos(charlie, amounts, ipk_zaddr2)
 
         # keep track of the fees incurred by bob (his sends)
-        bob_fee = Decimal(0)
+        bob_fee = Decimal("0")
 
         # Try to reproduce zombie balance reported in #1936
         # At generated zaddr, receive ZEC, and send ZEC back out. bob -> alice

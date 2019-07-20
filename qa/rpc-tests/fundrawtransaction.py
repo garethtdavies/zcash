@@ -146,7 +146,7 @@ class RawTransactionsTest(BitcoinTestFramework):
 
         assert_equal(utx!=False, True)
         inputs  = [ {'txid' : utx['txid'], 'vout' : utx['vout']}]
-        outputs = { self.nodes[0].getnewaddress() : Decimal(5.0) - fee - feeTolerance }
+        outputs = { self.nodes[0].getnewaddress() : Decimal("5.0") - fee - feeTolerance }
         rawtx   = self.nodes[2].createrawtransaction(inputs, outputs)
         dec_tx  = self.nodes[2].decoderawtransaction(rawtx)
         assert_equal(utx['txid'], dec_tx['vin'][0]['txid'])
