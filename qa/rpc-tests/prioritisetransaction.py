@@ -16,7 +16,7 @@ import time
 class PrioritiseTransactionTest (BitcoinTestFramework):
 
     def setup_chain(self):
-        print("Initializing test directory "+self.options.tmpdir)
+        print(("Initializing test directory "+self.options.tmpdir))
         initialize_chain_clean(self.options.tmpdir, 4)
 
     def setup_network(self, split=False):
@@ -31,7 +31,7 @@ class PrioritiseTransactionTest (BitcoinTestFramework):
     def run_test (self):
         # tx priority is calculated: priority = sum(input_value_in_base_units * input_age)/size_in_bytes
 
-        print "Mining 11kb blocks..."
+        print("Mining 11kb blocks...")
         self.nodes[0].generate(501)
 
         base_fee = self.nodes[0].getnetworkinfo()['relayfee']

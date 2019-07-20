@@ -21,7 +21,7 @@ from test_framework.mininode import COIN
 class GetrawtransactionTest(BitcoinTestFramework):
 
     def setup_chain(self):
-        print("Initializing test directory "+self.options.tmpdir)
+        print(("Initializing test directory "+self.options.tmpdir))
         initialize_chain_clean(self.options.tmpdir, 4)
 
     def setup_network(self):
@@ -84,7 +84,7 @@ class GetrawtransactionTest(BitcoinTestFramework):
         assert_equal(tx_a['vin'][0]['value'], 10) # coinbase
         assert_equal(tx_a['vin'][0]['valueSat'], 10*COIN)
         # we want the non-change (payment) output
-        vout = filter(lambda o: o['value'] == 2, tx_a['vout'])
+        vout = [o for o in tx_a['vout'] if o['value'] == 2]
         assert_equal(vout[0]['spentTxId'], txid_b)
         assert_equal(vout[0]['spentIndex'], 0)
         assert_equal(vout[0]['spentHeight'], 107)

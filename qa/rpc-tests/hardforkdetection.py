@@ -31,7 +31,7 @@ class HardForkDetectionTest(BitcoinTestFramework):
         errorString = ""
         try:
             self.nodes[0].getbalance()
-        except JSONRPCException,e:
+        except JSONRPCException as e:
             errorString = e.error['message']
 
         assert_equal("Safe mode:" in errorString, True)

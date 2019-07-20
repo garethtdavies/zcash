@@ -17,7 +17,7 @@ from test_framework.util import assert_equal, initialize_chain_clean, \
 class ReindexTest(BitcoinTestFramework):
 
     def setup_chain(self):
-        print("Initializing test directory "+self.options.tmpdir)
+        print(("Initializing test directory "+self.options.tmpdir))
         initialize_chain_clean(self.options.tmpdir, 1)
 
     def setup_network(self):
@@ -31,7 +31,7 @@ class ReindexTest(BitcoinTestFramework):
         wait_bitcoinds()
         self.nodes[0]=start_node(0, self.options.tmpdir, ["-debug", "-reindex", "-checkblockindex=1"])
         assert_equal(self.nodes[0].getblockcount(), 3)
-        print "Success"
+        print("Success")
 
 if __name__ == '__main__':
     ReindexTest().main()

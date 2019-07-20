@@ -12,9 +12,9 @@
 Functionality to build scripts, as well as SignatureHash().
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
 
-from test_framework.mininode import CTransaction, CTxOut, hash256
+
+from .test_framework.mininode import CTransaction, CTxOut, hash256
 
 import sys
 bchr = chr
@@ -27,7 +27,7 @@ if sys.version > '3':
 import struct
 import binascii
 
-from test_framework import bignum
+from .test_framework import bignum
 
 MAX_SCRIPT_SIZE = 10000
 MAX_SCRIPT_ELEMENT_SIZE = 520
@@ -658,7 +658,7 @@ class CScript(bytes):
                 other = bchr(CScriptOp(OP_0))
             else:
                 other = CScriptNum.encode(other)
-        elif isinstance(other, (int, long)):
+        elif isinstance(other, int):
             if 0 <= other <= 16:
                 other = bytes(bchr(CScriptOp.encode_op_n(other)))
             elif other == -1:

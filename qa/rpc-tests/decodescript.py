@@ -10,14 +10,14 @@ from test_framework.util import assert_equal, initialize_chain_clean, \
     start_nodes
 from test_framework.mininode import CTransaction
 from binascii import hexlify, unhexlify
-from cStringIO import StringIO
+from io import StringIO
 
 
 class DecodeScriptTest(BitcoinTestFramework):
     """Tests decoding scripts via RPC command "decodescript"."""
 
     def setup_chain(self):
-        print('Initializing test directory ' + self.options.tmpdir)
+        print(('Initializing test directory ' + self.options.tmpdir))
         initialize_chain_clean(self.options.tmpdir, 1)
 
     def setup_network(self, split=False):
@@ -178,7 +178,7 @@ class DecodeScriptTest(BitcoinTestFramework):
         # in fact, it contains an OP_RETURN with data specially crafted to cause improper decode if the code does not catch it.
         txSave.vin[0].scriptSig = unhexlify('6a143011020701010101010101020601010101010101')
         rpc_result = self.nodes[0].decoderawtransaction(hexlify(txSave.serialize()))
-        print(hexlify('636174'))
+        print((hexlify('636174')))
         assert_equal('OP_RETURN 3011020701010101010101020601010101010101', rpc_result['vin'][0]['scriptSig']['asm'])
 
     def run_test(self):

@@ -21,11 +21,11 @@ class MergeToAddressMixedNotes(BitcoinTestFramework):
         ]] * 4)
 
     def setup_chain(self):
-        print("Initializing test directory " + self.options.tmpdir)
+        print(("Initializing test directory " + self.options.tmpdir))
         initialize_chain_clean(self.options.tmpdir, 4)
 
     def run_test(self):
-        print "Mining blocks..."
+        print("Mining blocks...")
         self.nodes[0].generate(102)
         self.sync_all()
 

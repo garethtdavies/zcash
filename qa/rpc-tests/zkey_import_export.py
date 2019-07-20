@@ -11,6 +11,7 @@ from test_framework.util import assert_equal, assert_greater_than, start_nodes,\
     initialize_chain_clean, connect_nodes_bi, wait_and_assert_operationid_status
 
 import logging
+from functools import reduce
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
@@ -19,7 +20,7 @@ fee = Decimal('0.0001') # constant (but can be changed within reason)
 class ZkeyImportExportTest (BitcoinTestFramework):
 
     def setup_chain(self):
-        print("Initializing test directory "+self.options.tmpdir)
+        print(("Initializing test directory "+self.options.tmpdir))
         initialize_chain_clean(self.options.tmpdir, 5)
 
     def setup_network(self, split=False):
@@ -53,8 +54,8 @@ class ZkeyImportExportTest (BitcoinTestFramework):
                 return cmp(b["amount"], a["amount"])
 
             txs.sort(cmp_confirmations_high_to_low)
-            print("Sorted txs", txs)
-            print("amts", amts)
+            print(("Sorted txs", txs))
+            print(("amts", amts))
 
             try:
                 assert_equal(amts, [tx["amount"] for tx in txs])
@@ -99,7 +100,7 @@ class ZkeyImportExportTest (BitcoinTestFramework):
         # verify_utxos(charlie, [])
 
         # the amounts of each txn embodied which generates a single UTXO:
-        amounts = map(Decimal, ['2.3', '3.7', '0.1', '0.5', '1.0', '0.19'])
+        amounts = list(map(Decimal, ['2.3', '3.7', '0.1', '0.5', '1.0', '0.19']))
 
         # Internal test consistency assertion:
         assert_greater_than(
@@ -150,7 +151,7 @@ class ZkeyImportExportTest (BitcoinTestFramework):
         # Try to reproduce zombie balance reported in #1936
         # At generated zaddr, receive ZEC, and send ZEC back out. bob -> alice
         for amount in amounts[:2]:
-            print("Sending amount from bob to alice: ", amount)
+            print(("Sending amount from bob to alice: ", amount))
             z_send(bob, bob_zaddr, alice_zaddr, amount)
             bob_fee += fee
 

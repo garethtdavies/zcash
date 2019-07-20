@@ -25,7 +25,7 @@ NULL_FIELD = "0000000000000000000000000000000000000000000000000000000000000000"
 class FinalSaplingRootTest(BitcoinTestFramework):
 
     def setup_chain(self):
-        print("Initializing test directory "+self.options.tmpdir)
+        print(("Initializing test directory "+self.options.tmpdir))
         initialize_chain_clean(self.options.tmpdir, 4)
 
     def setup_network(self, split=False):
@@ -52,7 +52,7 @@ class FinalSaplingRootTest(BitcoinTestFramework):
 
         # Verify all generated blocks contain the empty root of the Sapling tree.
         blockcount = self.nodes[0].getblockcount()
-        for height in xrange(1, blockcount + 1):
+        for height in range(1, blockcount + 1):
             blk = self.nodes[0].getblock(str(height))
             assert_equal(blk["finalsaplingroot"], SAPLING_TREE_EMPTY_ROOT)
 

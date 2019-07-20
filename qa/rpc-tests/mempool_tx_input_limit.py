@@ -28,7 +28,7 @@ class MempoolTxInputLimitTest(BitcoinTestFramework):
         self.sync_all
 
     def setup_chain(self):
-        print "Initializing test directory "+self.options.tmpdir
+        print("Initializing test directory "+self.options.tmpdir)
         initialize_chain_clean(self.options.tmpdir, 2)
 
     def call_z_sendmany(self, from_addr, to_addr, amount):
@@ -96,7 +96,7 @@ class MempoolTxInputLimitTest(BitcoinTestFramework):
         try:
             self.nodes[1].sendfrom("", node0_taddr, spend_taddr_amount - Decimal('1'))
             assert(False)
-        except JSONRPCException,e:
+        except JSONRPCException as e:
             msg = e.error['message']
             assert_equal("Too many transparent inputs 3 > limit 2", msg)
 

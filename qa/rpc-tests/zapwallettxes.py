@@ -14,7 +14,7 @@ from test_framework.util import assert_equal, initialize_chain_clean, \
 class ZapWalletTXesTest (BitcoinTestFramework):
 
     def setup_chain(self):
-        print("Initializing test directory "+self.options.tmpdir)
+        print(("Initializing test directory "+self.options.tmpdir))
         initialize_chain_clean(self.options.tmpdir, 3)
 
     def setup_network(self, split=False):
@@ -26,7 +26,7 @@ class ZapWalletTXesTest (BitcoinTestFramework):
         self.sync_all()
 
     def run_test (self):
-        print "Mining blocks..."
+        print("Mining blocks...")
         self.nodes[0].generate(4)
         self.sync_all()
         self.nodes[1].generate(101)
@@ -72,8 +72,8 @@ class ZapWalletTXesTest (BitcoinTestFramework):
         aException = False
         try:
             tx3 = self.nodes[0].gettransaction(txid3)
-        except JSONRPCException,e:
-            print e
+        except JSONRPCException as e:
+            print(e)
             aException = True
 
         assert_equal(aException, True) # there must be a expection because the unconfirmed wallettx0 must be gone by now

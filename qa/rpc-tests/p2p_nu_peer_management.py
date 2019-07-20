@@ -54,7 +54,7 @@ class TestManager(NodeConnCB):
 class NUPeerManagementTest(BitcoinTestFramework):
 
     def setup_chain(self):
-        print "Initializing test directory "+self.options.tmpdir
+        print("Initializing test directory "+self.options.tmpdir)
         initialize_chain_clean(self.options.tmpdir, 1)
 
     def setup_network(self):
@@ -70,7 +70,7 @@ class NUPeerManagementTest(BitcoinTestFramework):
 
         # Launch Sprout, Overwinter, and Sapling mininodes
         nodes = []
-        for x in xrange(10):
+        for x in range(10):
             nodes.append(NodeConn('127.0.0.1', p2p_port(0), self.nodes[0],
                 test, "regtest", SPROUT_PROTO_VERSION))
             nodes.append(NodeConn('127.0.0.1', p2p_port(0), self.nodes[0],

@@ -35,7 +35,7 @@ class Server(MessagingHandler):
         self.txidseq = -1
 
     def on_start(self, event):
-        print("Proton listening on:", self.url)
+        print(("Proton listening on:", self.url))
         self.container = event.container
         self.acceptor = event.container.listen(self.url)
 
@@ -86,7 +86,7 @@ class ProtonTest (BitcoinTestFramework):
             ])
 
     def run_test(self):
-        print("self.numblocks is: %s" % self.numblocks)
+        print(("self.numblocks is: %s" % self.numblocks))
         self.sync_all()
         baseheight = self.nodes[0].getblockcount()    # 200 blocks already mined
 
