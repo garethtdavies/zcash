@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://www.opensource.org/licenses/mit-license.php .
@@ -19,7 +19,7 @@ that flag, we use a block time before the switchover date).
 NOTE: This test is very slow and may take more than 40 minutes to run.
 '''
 
-import sys; assert sys.version_info < (3,), ur"This script does not run under Python 3. Please use Python 2.7.x."
+
 
 from test_framework.test_framework import ComparisonTestFramework
 from test_framework.comptool import TestInstance, TestManager
