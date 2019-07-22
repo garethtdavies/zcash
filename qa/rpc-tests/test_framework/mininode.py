@@ -544,7 +544,7 @@ class CTxIn(object):
 
 
 class CTxOut(object):
-    def __init__(self, nValue=0, scriptPubKey=""):
+    def __init__(self, nValue=0, scriptPubKey=b""):
         self.nValue = nValue
         self.scriptPubKey = scriptPubKey
 
@@ -554,7 +554,6 @@ class CTxOut(object):
 
     def serialize(self):
         r = b""
-        import pdb; pdb.set_trace()
         r += struct.pack("<q", self.nValue)
         r += ser_string(self.scriptPubKey)
         return r
@@ -647,9 +646,10 @@ class CTransaction(object):
         self.calc_sha256()
 
     def calc_sha256(self):
+        serialized = self.serialize()
         if self.sha256 is None:
-            self.sha256 = uint256_from_str(hash256(self.serialize()))
-        self.hash = hash256(self.serialize())[::-1].encode('hex_codec')
+            self.sha256 = uint256_from_str(hash256(serialized))
+        self.hash = hash256(serialized)[::-1]#.encode('hex_codec')
 
     def is_valid(self):
         self.calc_sha256()
@@ -737,7 +737,7 @@ class CBlockHeader(object):
             r += ser_uint256(self.nNonce)
             r += ser_char_vector(self.nSolution)
             self.sha256 = uint256_from_str(hash256(r))
-            self.hash = hash256(r)[::-1].encode('hex_codec')
+            self.hash = hash256(r)[::-1]#.encode('hex_codec')
 
     def rehash(self):
         self.sha256 = None
@@ -799,7 +799,7 @@ class CBlock(CBlockHeader):
     def solve(self, n=48, k=5):
         target = uint256_from_compact(self.nBits)
         # H(I||...
-        digest = blake2b(digest_size=(512/n)*n/8, person=zcash_person(n, k))
+        digest = blake2b(digest_size=(512//n)*n//8, person=zcash_person(n, k))
         digest.update(super(CBlock, self).serialize()[:108])
         self.nNonce = 0
         while True:
