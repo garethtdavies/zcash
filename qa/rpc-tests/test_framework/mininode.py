@@ -43,7 +43,7 @@ OVERWINTER_PROTO_VERSION = 170003
 BIP0031_VERSION = 60000
 SPROUT_PROTO_VERSION = 170002  # past bip-31 for ping/pong
 SAPLING_PROTO_VERSION = 170006
-MY_SUBVERSION = "/python-mininode-tester:0.0.1/"
+MY_SUBVERSION = b"/python-mininode-tester:0.0.1/"
 
 OVERWINTER_VERSION_GROUP_ID = 0x03C48270
 
@@ -280,7 +280,7 @@ def ser_char_vector(l):
 class CAddress(object):
     def __init__(self):
         self.nServices = 1
-        self.pchReserved = "\x00" * 10 + "\xff" * 2
+        self.pchReserved = b"\x00" * 10 + b"\xff" * 2
         self.ip = "0.0.0.0"
         self.port = 0
 
@@ -554,6 +554,7 @@ class CTxOut(object):
 
     def serialize(self):
         r = b""
+        import pdb; pdb.set_trace()
         r += struct.pack("<q", self.nValue)
         r += ser_string(self.scriptPubKey)
         return r
@@ -904,7 +905,7 @@ class msg_version(object):
     def __init__(self, protocol_version=SPROUT_PROTO_VERSION):
         self.nVersion = protocol_version
         self.nServices = 1
-        self.nTime = time.time()
+        self.nTime = int(time.time())
         self.addrTo = CAddress()
         self.addrFrom = CAddress()
         self.nNonce = random.getrandbits(64)
@@ -1405,9 +1406,9 @@ class NodeConn(asyncore.dispatcher):
         "mempool": msg_mempool
     }
     MAGIC_BYTES = {
-        "mainnet": "\x24\xe9\x27\x64",   # mainnet
-        "testnet3": "\xfa\x1a\xf9\xbf",  # testnet3
-        "regtest": "\xaa\xe8\x3f\x5f"    # regtest
+        "mainnet": b"\x24\xe9\x27\x64",   # mainnet
+        "testnet3": b"\xfa\x1a\xf9\xbf",  # testnet3
+        "regtest": b"\xaa\xe8\x3f\x5f"    # regtest
     }
 
     def __init__(self, dstaddr, dstport, rpc, callback, net="regtest", protocol_version=SPROUT_PROTO_VERSION):
@@ -1416,8 +1417,8 @@ class NodeConn(asyncore.dispatcher):
         self.dstaddr = dstaddr
         self.dstport = dstport
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sendbuf = ""
-        self.recvbuf = ""
+        self.sendbuf = b""
+        self.recvbuf = b""
         self.ver_send = 209
         self.ver_recv = 209
         self.last_sent = 0
@@ -1447,14 +1448,14 @@ class NodeConn(asyncore.dispatcher):
 
     def handle_connect(self):
         self.show_debug_msg("MiniNode: Connected & Listening: \n")
-        self.state = "connected"
+        self.state = b"connected"
 
     def handle_close(self):
         self.show_debug_msg("MiniNode: Closing Connection to %s:%d... "
                             % (self.dstaddr, self.dstport))
-        self.state = "closed"
-        self.recvbuf = ""
-        self.sendbuf = ""
+        self.state = b"closed"
+        self.recvbuf = b""
+        self.sendbuf = b""
         try:
             self.close()
         except:
@@ -1533,8 +1534,8 @@ class NodeConn(asyncore.dispatcher):
         command = message.command
         data = message.serialize()
         tmsg = self.MAGIC_BYTES[self.network]
-        tmsg += command
-        tmsg += "\x00" * (12 - len(command))
+        tmsg += bytes(command, encoding="utf-8")
+        tmsg += b"\x00" * (12 - len(command))
         tmsg += struct.pack("<I", len(data))
         if self.ver_send >= 209:
             th = sha256(data)
