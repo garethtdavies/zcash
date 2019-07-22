@@ -52,7 +52,7 @@ def create_coinbase(heightAdjust = 0):
     coinbaseoutput.nValue = int(12.5*100000000)
     halvings = int((counter+heightAdjust)/150) # regtest
     coinbaseoutput.nValue >>= halvings
-    coinbaseoutput.scriptPubKey = ""
+    coinbaseoutput.scriptPubKey = b""
     coinbase.vout = [ coinbaseoutput ]
     if halvings == 0: # regtest
         froutput = CTxOut()
