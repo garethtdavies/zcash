@@ -49,11 +49,8 @@ class ZkeyImportExportTest (BitcoinTestFramework):
         def verify_utxos(node, amts, zaddr):
             amts.sort(reverse=True)
             txs = node.z_listreceivedbyaddress(zaddr)
-
-            def cmp_confirmations_high_to_low(a, b):
-                return cmp(b["amount"], a["amount"])
-
-            txs.sort(cmp_confirmations_high_to_low)
+            txs.sort(key=lambda x: x["amount"])
+            txs.reverse()
             print(("Sorted txs", txs))
             print(("amts", amts))
 
@@ -104,7 +101,7 @@ class ZkeyImportExportTest (BitcoinTestFramework):
 
         # Internal test consistency assertion:
         assert_greater_than(
-            get_private_balance(alice),
+            Decimal(get_private_balance(alice)),
             reduce(Decimal.__add__, amounts))
 
         logging.info("Sending pre-export txns...")
