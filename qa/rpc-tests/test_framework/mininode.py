@@ -516,7 +516,7 @@ class COutPoint(object):
 
 
 class CTxIn(object):
-    def __init__(self, outpoint=None, scriptSig="", nSequence=0):
+    def __init__(self, outpoint=None, scriptSig=b"", nSequence=0):
         if outpoint is None:
             self.prevout = COutPoint()
         else:
@@ -835,9 +835,9 @@ class CUnsignedAlert(object):
         self.nMaxVer = 0
         self.setSubVer = []
         self.nPriority = 0
-        self.strComment = ""
-        self.strStatusBar = ""
-        self.strReserved = ""
+        self.strComment = b""
+        self.strStatusBar = b""
+        self.strReserved = b""
 
     def deserialize(self, f):
         self.nVersion = struct.unpack("<i", f.read(4))[0]
@@ -880,8 +880,8 @@ class CUnsignedAlert(object):
 
 class CAlert(object):
     def __init__(self):
-        self.vchMsg = ""
-        self.vchSig = ""
+        self.vchMsg = b""
+        self.vchSig = b""
 
     def deserialize(self, f):
         self.vchMsg = deser_string(f)
@@ -1124,7 +1124,7 @@ class msg_getaddr(object):
         pass
 
     def serialize(self):
-        return ""
+        return b""
 
     def __repr__(self):
         return "msg_getaddr()"
@@ -1140,7 +1140,7 @@ class msg_ping_prebip31(object):
         pass
 
     def serialize(self):
-        return ""
+        return b""
 
     def __repr__(self):
         return "msg_ping() (pre-bip31)"
@@ -1192,7 +1192,7 @@ class msg_mempool(object):
         pass
 
     def serialize(self):
-        return ""
+        return b""
 
     def __repr__(self):
         return "msg_mempool()"
@@ -1251,9 +1251,9 @@ class msg_reject(object):
     command = b"reject"
 
     def __init__(self):
-        self.message = ""
-        self.code = ""
-        self.reason = ""
+        self.message = b""
+        self.code = b""
+        self.reason = b""
         self.data = 0
 
     def deserialize(self, f):
@@ -1280,7 +1280,7 @@ class msg_filteradd(object):
     command = b"filteradd"
 
     def __init__(self):
-        self.data = ""
+        self.data = b""
 
     def deserialize(self, f):
         self.data = deser_string(f)
@@ -1302,7 +1302,7 @@ class msg_filterclear(object):
         pass
 
     def serialize(self):
-        return ""
+        return b""
 
     def __repr__(self):
         return "msg_filterclear()"
