@@ -104,7 +104,7 @@ class SproutSaplingMigration(BitcoinTestFramework):
         assert_equal(target_height, result['target_height'])
         assert_equal(1, result['result']['num_tx_created'])
         assert_equal(1, len(result['result']['migration_txids']))
-        assert_true(result['result']['amount_migrated'] > Decimal('0'))
+        assert_true(Decimal(result['result']['amount_migrated']) > Decimal('0'))
 
         assert_equal(0, len(node.getrawmempool()), "mempool size at 495 % 500")
 
