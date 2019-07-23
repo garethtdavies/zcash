@@ -305,9 +305,9 @@ class CAddress(object):
 
 class CInv(object):
     typemap = {
-        0: "Error",
-        1: "TX",
-        2: "Block"}
+        0: b"Error",
+        1: b"TX",
+        2: b"Block"}
 
     def __init__(self, t=0, h=0):
         self.type = t
@@ -780,7 +780,7 @@ class CBlock(CBlockHeader):
 
     def is_valid(self, n=48, k=5):
         # H(I||...
-        digest = blake2b(digest_size=(512/n)*n/8, person=zcash_person(n, k))
+        digest = blake2b(digest_size=(512//n)*n//8, person=zcash_person(n, k))
         digest.update(super(CBlock, self).serialize()[:108])
         hash_nonce(digest, self.nNonce)
         if not gbp_validate(self.nSolution, digest, n, k):
@@ -900,7 +900,7 @@ class CAlert(object):
 
 # Objects that correspond to messages on the wire
 class msg_version(object):
-    command = "version"
+    command = b"version"
 
     def __init__(self, protocol_version=SPROUT_PROTO_VERSION):
         self.nVersion = protocol_version
@@ -955,7 +955,7 @@ class msg_version(object):
 
 
 class msg_verack(object):
-    command = "verack"
+    command = b"verack"
 
     def __init__(self):
         pass
@@ -964,14 +964,14 @@ class msg_verack(object):
         pass
 
     def serialize(self):
-        return ""
+        return b""
 
     def __repr__(self):
         return "msg_verack()"
 
 
 class msg_addr(object):
-    command = "addr"
+    command = b"addr"
 
     def __init__(self):
         self.addrs = []
@@ -987,7 +987,7 @@ class msg_addr(object):
 
 
 class msg_alert(object):
-    command = "alert"
+    command = b"alert"
 
     def __init__(self):
         self.alert = CAlert()
@@ -1006,7 +1006,7 @@ class msg_alert(object):
 
 
 class msg_inv(object):
-    command = "inv"
+    command = b"inv"
 
     def __init__(self, inv=None):
         if inv is None:
@@ -1025,7 +1025,7 @@ class msg_inv(object):
 
 
 class msg_getdata(object):
-    command = "getdata"
+    command = b"getdata"
 
     def __init__(self):
         self.inv = []
@@ -1041,7 +1041,7 @@ class msg_getdata(object):
 
 
 class msg_notfound(object):
-    command = "notfound"
+    command = b"notfound"
 
     def __init__(self):
         self.inv = []
@@ -1057,7 +1057,7 @@ class msg_notfound(object):
 
 
 class msg_getblocks(object):
-    command = "getblocks"
+    command = b"getblocks"
 
     def __init__(self):
         self.locator = CBlockLocator()
@@ -1080,7 +1080,7 @@ class msg_getblocks(object):
 
 
 class msg_tx(object):
-    command = "tx"
+    command = b"tx"
 
     def __init__(self, tx=CTransaction()):
         self.tx = tx
@@ -1096,7 +1096,7 @@ class msg_tx(object):
 
 
 class msg_block(object):
-    command = "block"
+    command = b"block"
 
     def __init__(self, block=None):
         if block is None:
@@ -1115,7 +1115,7 @@ class msg_block(object):
 
 
 class msg_getaddr(object):
-    command = "getaddr"
+    command = b"getaddr"
 
     def __init__(self):
         pass
@@ -1131,7 +1131,7 @@ class msg_getaddr(object):
 
 
 class msg_ping_prebip31(object):
-    command = "ping"
+    command = b"ping"
 
     def __init__(self):
         pass
@@ -1147,7 +1147,7 @@ class msg_ping_prebip31(object):
 
 
 class msg_ping(object):
-    command = "ping"
+    command = b"ping"
 
     def __init__(self, nonce=0):
         self.nonce = nonce
@@ -1165,7 +1165,7 @@ class msg_ping(object):
 
 
 class msg_pong(object):
-    command = "pong"
+    command = b"pong"
 
     def __init__(self, nonce=0):
         self.nonce = nonce
@@ -1183,7 +1183,7 @@ class msg_pong(object):
 
 
 class msg_mempool(object):
-    command = "mempool"
+    command = b"mempool"
 
     def __init__(self):
         pass
@@ -1203,7 +1203,7 @@ class msg_mempool(object):
 # vector of hashes
 # hash_stop (hash of last desired block header, 0 to get as many as possible)
 class msg_getheaders(object):
-    command = "getheaders"
+    command = b"getheaders"
 
     def __init__(self):
         self.locator = CBlockLocator()
@@ -1228,7 +1228,7 @@ class msg_getheaders(object):
 # headers message has
 # <count> <vector of block headers>
 class msg_headers(object):
-    command = "headers"
+    command = b"headers"
 
     def __init__(self):
         self.headers = []
@@ -1248,7 +1248,7 @@ class msg_headers(object):
 
 
 class msg_reject(object):
-    command = "reject"
+    command = b"reject"
 
     def __init__(self):
         self.message = ""
@@ -1277,7 +1277,7 @@ class msg_reject(object):
 
 
 class msg_filteradd(object):
-    command = "filteradd"
+    command = b"filteradd"
 
     def __init__(self):
         self.data = ""
@@ -1293,7 +1293,7 @@ class msg_filteradd(object):
 
 
 class msg_filterclear(object):
-    command = "filterclear"
+    command = b"filterclear"
 
     def __init__(self):
         pass
@@ -1318,32 +1318,33 @@ class NodeConnCB(object):
     # which associates the derived classes' functions to incoming messages
     def create_callback_map(self):
         self.cbmap = {
-            "version": self.on_version,
-            "verack": self.on_verack,
-            "addr": self.on_addr,
-            "alert": self.on_alert,
-            "inv": self.on_inv,
-            "getdata": self.on_getdata,
-            "notfound": self.on_notfound,
-            "getblocks": self.on_getblocks,
-            "tx": self.on_tx,
-            "block": self.on_block,
-            "getaddr": self.on_getaddr,
-            "ping": self.on_ping,
-            "pong": self.on_pong,
-            "headers": self.on_headers,
-            "getheaders": self.on_getheaders,
-            "reject": self.on_reject,
-            "mempool": self.on_mempool
+            b"version": self.on_version,
+            b"verack": self.on_verack,
+            b"addr": self.on_addr,
+            b"alert": self.on_alert,
+            b"inv": self.on_inv,
+            b"getdata": self.on_getdata,
+            b"notfound": self.on_notfound,
+            b"getblocks": self.on_getblocks,
+            b"tx": self.on_tx,
+            b"block": self.on_block,
+            b"getaddr": self.on_getaddr,
+            b"ping": self.on_ping,
+            b"pong": self.on_pong,
+            b"headers": self.on_headers,
+            b"getheaders": self.on_getheaders,
+            b"reject": self.on_reject,
+            b"mempool": self.on_mempool
         }
 
     def deliver(self, conn, message):
         with mininode_lock:
             try:
                 self.cbmap[message.command](conn, message)
-            except:
+            except Exception as e:
                 print(("ERROR delivering %s (%s)" % (repr(message),
                                                     sys.exc_info()[0])))
+                raise e
 
     def on_version(self, conn, message):
         if message.nVersion >= 209:
@@ -1387,23 +1388,23 @@ class NodeConnCB(object):
 # This class provides an interface for a p2p connection to a specified node
 class NodeConn(asyncore.dispatcher):
     messagemap = {
-        "version": msg_version,
-        "verack": msg_verack,
-        "addr": msg_addr,
-        "alert": msg_alert,
-        "inv": msg_inv,
-        "getdata": msg_getdata,
-        "notfound": msg_notfound,
-        "getblocks": msg_getblocks,
-        "tx": msg_tx,
-        "block": msg_block,
-        "getaddr": msg_getaddr,
-        "ping": msg_ping,
-        "pong": msg_pong,
-        "headers": msg_headers,
-        "getheaders": msg_getheaders,
-        "reject": msg_reject,
-        "mempool": msg_mempool
+        b"version": msg_version,
+        b"verack": msg_verack,
+        b"addr": msg_addr,
+        b"alert": msg_alert,
+        b"inv": msg_inv,
+        b"getdata": msg_getdata,
+        b"notfound": msg_notfound,
+        b"getblocks": msg_getblocks,
+        b"tx": msg_tx,
+        b"block": msg_block,
+        b"getaddr": msg_getaddr,
+        b"ping": msg_ping,
+        b"pong": msg_pong,
+        b"headers": msg_headers,
+        b"getheaders": msg_getheaders,
+        b"reject": msg_reject,
+        b"mempool": msg_mempool
     }
     MAGIC_BYTES = {
         "mainnet": b"\x24\xe9\x27\x64",   # mainnet
@@ -1439,8 +1440,10 @@ class NodeConn(asyncore.dispatcher):
 
         try:
             self.connect((dstaddr, dstport))
-        except:
+        except Exception as e:
+            print(e)
             self.handle_close()
+            raise e
         self.rpc = rpc
 
     def show_debug_msg(self, msg):
@@ -1458,8 +1461,9 @@ class NodeConn(asyncore.dispatcher):
         self.sendbuf = b""
         try:
             self.close()
-        except:
-            pass
+        except Exception as e:
+            print(e)
+            raise e
         self.cb.on_close(self)
 
     def handle_read(self):
@@ -1468,8 +1472,9 @@ class NodeConn(asyncore.dispatcher):
             if len(t) > 0:
                 self.recvbuf += t
                 self.got_data()
-        except:
-            pass
+        except Exception as e:
+            print(e)
+            raise e
 
     def readable(self):
         return True
@@ -1483,9 +1488,10 @@ class NodeConn(asyncore.dispatcher):
         with mininode_lock:
             try:
                 sent = self.send(self.sendbuf)
-            except:
+            except Exception as e:
                 self.handle_close()
-                return
+                print(e)
+                raise e
             self.sendbuf = self.sendbuf[sent:]
 
     def got_data(self):
@@ -1497,7 +1503,7 @@ class NodeConn(asyncore.dispatcher):
             if self.ver_recv < 209:
                 if len(self.recvbuf) < 4 + 12 + 4:
                     return
-                command = self.recvbuf[4:4+12].split("\x00", 1)[0]
+                command = self.recvbuf[4:4+12].split(b"\x00", 1)[0]
                 msglen = struct.unpack("<i", self.recvbuf[4+12:4+12+4])[0]
                 checksum = None
                 if len(self.recvbuf) < 4 + 12 + 4 + msglen:
@@ -1507,7 +1513,7 @@ class NodeConn(asyncore.dispatcher):
             else:
                 if len(self.recvbuf) < 4 + 12 + 4 + 4:
                     return
-                command = self.recvbuf[4:4+12].split("\x00", 1)[0]
+                command = self.recvbuf[4:4+12].split(b"\x00", 1)[0]
                 msglen = struct.unpack("<i", self.recvbuf[4+12:4+12+4])[0]
                 checksum = self.recvbuf[4+12+4:4+12+4+4]
                 if len(self.recvbuf) < 4 + 12 + 4 + 4 + msglen:
@@ -1519,22 +1525,22 @@ class NodeConn(asyncore.dispatcher):
                     raise ValueError("got bad checksum " + repr(self.recvbuf))
                 self.recvbuf = self.recvbuf[4+12+4+4+msglen:]
             if command in self.messagemap:
-                f = io.StringIO(msg)
+                f = io.BytesIO(msg)
                 t = self.messagemap[command]()
                 t.deserialize(f)
                 self.got_message(t)
             else:
-                self.show_debug_msg("Unknown command: '" + command + "' " +
+                self.show_debug_msg("Unknown command: '" + str(command, encoding="utf-8") + "' " +
                                     repr(msg))
 
     def send_message(self, message, pushbuf=False):
-        if self.state != "connected" and not pushbuf:
+        if self.state != b"connected" and not pushbuf:
             return
         self.show_debug_msg("Send %s" % repr(message))
         command = message.command
         data = message.serialize()
         tmsg = self.MAGIC_BYTES[self.network]
-        tmsg += bytes(command, encoding="utf-8")
+        tmsg += command
         tmsg += b"\x00" * (12 - len(command))
         tmsg += struct.pack("<I", len(data))
         if self.ver_send >= 209:
@@ -1547,11 +1553,11 @@ class NodeConn(asyncore.dispatcher):
             self.last_sent = time.time()
 
     def got_message(self, message):
-        if message.command == "version":
+        if message.command == b"version":
             if message.nVersion <= BIP0031_VERSION:
-                self.messagemap['ping'] = msg_ping_prebip31
+                self.messagemap[b'ping'] = msg_ping_prebip31
         if self.last_sent + 30 * 60 < time.time():
-            self.send_message(self.messagemap['ping']())
+            self.send_message(self.messagemap[b'ping']())
         self.show_debug_msg("Recv %s" % repr(message))
         self.cb.deliver(self, message)
 

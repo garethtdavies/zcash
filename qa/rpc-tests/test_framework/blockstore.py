@@ -23,7 +23,7 @@ class BlockStore(object):
             serialized_block = self.blockDB[repr(blockhash)]
         except KeyError:
             return None
-        f = io.StringIO(serialized_block)
+        f = io.BytesIO(serialized_block)
         ret = CBlock()
         ret.deserialize(f)
         ret.calc_sha256()
@@ -107,7 +107,7 @@ class TxStore(object):
             serialized_tx = self.txDB[repr(txhash)]
         except KeyError:
             return None
-        f = io.StringIO(serialized_tx)
+        f = io.BytesIO(serialized_tx)
         ret = CTransaction()
         ret.deserialize(f)
         ret.calc_sha256()

@@ -38,10 +38,10 @@ class BIP65Test(ComparisonTestFramework):
         self.is_network_split = False
 
     def run_test(self):
-        test = TestManager(self, self.options.tmpdir)
-        test.add_all_connections(self.nodes)
+        test_manager = TestManager(self, self.options.tmpdir)
+        test_manager.add_all_connections(self.nodes)
         NetworkThread().start() # Start up network handling in another thread
-        test.run()
+        test_manager.run()
 
     def create_transaction(self, node, coinbase, to_address, amount):
         from_txid = node.getblock(coinbase)['tx'][0]
