@@ -34,7 +34,6 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-from http import HTTPStatus
 import http.client
 import base64
 import decimal
@@ -61,10 +60,6 @@ class AuthServiceProxy():
         self.__service_url = service_url
         self.__service_name = service_name
         self.__url = urllib.parse.urlparse(service_url)
-        if self.__url.port is None:
-            port = 80
-        else:
-            port = self.__url.port
         
         (user, passwd) = (self.__url.username, self.__url.password)
         try:
