@@ -26,9 +26,9 @@ def repofile(filename):
 # Custom test runners
 #
 
-RE_RPATH_RUNPATH = re.compile('No RPATH.*No RUNPATH')
-RE_FORTIFY_AVAILABLE = re.compile('FORTIFY_SOURCE support available.*Yes')
-RE_FORTIFY_USED = re.compile('Binary compiled with FORTIFY_SOURCE support.*Yes')
+RE_RPATH_RUNPATH = re.compile(b'No RPATH.*No RUNPATH')
+RE_FORTIFY_AVAILABLE = re.compile(b'FORTIFY_SOURCE support available.*Yes')
+RE_FORTIFY_USED = re.compile(b'Binary compiled with FORTIFY_SOURCE support.*Yes')
 
 def test_rpath_runpath(filename):
     output = subprocess.check_output(
