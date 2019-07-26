@@ -35,10 +35,10 @@ def test_rpath_runpath(filename):
         [repofile('qa/zcash/checksec.sh'), '--file', repofile(filename)]
     )
     if RE_RPATH_RUNPATH.search(output):
-        print(('PASS: %s has no RPATH or RUNPATH.' % filename))
+        print('PASS: %s has no RPATH or RUNPATH.' % filename)
         return True
     else:
-        print(('FAIL: %s has an RPATH or a RUNPATH.' % filename))
+        print('FAIL: %s has an RPATH or a RUNPATH.' % filename)
         print(output)
         return False
 
@@ -51,10 +51,10 @@ def test_fortify_source(filename):
     line2 = proc.stdout.readline()
     proc.terminate()
     if RE_FORTIFY_AVAILABLE.search(line1) and RE_FORTIFY_USED.search(line2):
-        print(('PASS: %s has FORTIFY_SOURCE.' % filename))
+        print('PASS: %s has FORTIFY_SOURCE.' % filename)
         return True
     else:
-        print(('FAIL: %s is missing FORTIFY_SOURCE.' % filename))
+        print('FAIL: %s is missing FORTIFY_SOURCE.' % filename)
         return False
 
 def check_security_hardening():
@@ -161,8 +161,8 @@ STAGE_COMMANDS = {
 #
 
 def run_stage(stage):
-    print(('Running stage %s' % stage))
-    print(('=' * (len(stage) + 14)))
+    print('Running stage %s' % stage)
+    print('=' * (len(stage) + 14))
     print()
 
     cmd = STAGE_COMMANDS[stage]
@@ -172,8 +172,8 @@ def run_stage(stage):
         ret = cmd()
 
     print()
-    print(('-' * (len(stage) + 15)))
-    print(('Finished stage %s' % stage))
+    print('-' * (len(stage) + 15))
+    print('Finished stage %s' % stage)
     print()
 
     return ret
@@ -194,7 +194,7 @@ def main():
     # Check validity of stages
     for s in args.stage:
         if s not in STAGES:
-            print(("Invalid stage '%s' (choose from %s)" % (s, STAGES)))
+            print("Invalid stage '%s' (choose from %s)" % (s, STAGES))
             sys.exit(1)
 
     # Run the stages
