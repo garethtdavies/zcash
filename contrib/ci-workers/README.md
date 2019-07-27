@@ -19,7 +19,7 @@ c. When adding workers, start by adding workers for the "most common" variant of
 
 # Setting up a latent worker on Amazon EC2
 
-1. Add a regular (non-latent) worker to the master.cfg for dev-ci.z.cash, and
+1. Add a regular (non-latent) worker to the master.cfg for https://dev-ci.z.cash/#/, and
    deploy the changes.
   - This enables the Ansible playbook to run to completion, ending in the worker
     connecting to the master.
@@ -42,11 +42,11 @@ c. When adding workers, start by adding workers for the "most common" variant of
 
 5. Run `ansible-playbook -e buildbot_worker_host_template=templates/host.ec2.j2 -i inventory/hosts unix.yml`,
    passing in the worker's Buildbot name and password.
-  - After a successful run, the worker should be connected to dev-ci.z.cash and
+  - After a successful run, the worker should be connected to https://dev-ci.z.cash/#/ and
     visible in its worker list.
 
 6. Create an AMI from the instance. This is the worker AMI to put into the
-   master.cfg for dev-ci.z.cash.
+   master.cfg for https://dev-ci.z.cash/#/.
   - 16 GB of storage should be sufficient.
 
 7. SSH into the instance, and edit the worker config to connect to ci.z.cash.
