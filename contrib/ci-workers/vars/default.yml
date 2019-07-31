@@ -53,3 +53,4 @@ rpc_test_modules:
   - pyzmq
   - pyutil
   - python-qpid-proton
+  - simplejson
