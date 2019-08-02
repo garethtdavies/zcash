@@ -1,9 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2019 The Zcash developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-import sys; assert sys.version_info < (3,), ur"This script does not run under Python 3. Please use Python 2.7.x."
 
 from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import (
@@ -20,7 +19,7 @@ from decimal import Decimal
 class WalletChangeAddressesTest(BitcoinTestFramework):
 
     def setup_chain(self):
-        print("Initializing test directory " + self.options.tmpdir)
+        print(("Initializing test directory " + self.options.tmpdir))
         initialize_chain_clean(self.options.tmpdir, 2)
 
     def setup_network(self):
@@ -74,22 +73,22 @@ class WalletChangeAddressesTest(BitcoinTestFramework):
                 tx1OutAddrs = tx1['vout'][i]['scriptPubKey']['addresses']
                 tx2OutAddrs = tx2['vout'][i]['scriptPubKey']['addresses']
                 if tx1OutAddrs != [target]:
-                    print('Source address:     %s' % taddrSource)
-                    print('TX1 change address: %s' % tx1OutAddrs[0])
-                    print('TX2 change address: %s' % tx2OutAddrs[0])
+                    print(('Source address:     %s' % taddrSource))
+                    print(('TX1 change address: %s' % tx1OutAddrs[0]))
+                    print(('TX2 change address: %s' % tx2OutAddrs[0]))
                     assert(tx1OutAddrs != tx2OutAddrs)
 
         taddr = self.nodes[0].getnewaddress()
         saplingAddr = self.nodes[0].z_getnewaddress('sapling')
         sproutAddr = self.nodes[0].z_getnewaddress('sprout')
 
-        print
+        print()
         print('Checking z_sendmany(taddr->Sapling)')
         check_change_taddr_reuse(saplingAddr)
-        print
+        print()
         print('Checking z_sendmany(taddr->Sprout)')
         check_change_taddr_reuse(sproutAddr)
-        print
+        print()
         print('Checking z_sendmany(taddr->taddr)')
         check_change_taddr_reuse(taddr)
 

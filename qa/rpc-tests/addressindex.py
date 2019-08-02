@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2019 The Zcash developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -14,8 +14,6 @@
 #   getaddressutxos
 #   getaddressmempool
 #
-
-import sys; assert sys.version_info < (3,), ur"This script does not run under Python 3. Please use Python 2.7.x."
 
 from test_framework.test_framework import BitcoinTestFramework
 
@@ -47,7 +45,7 @@ from binascii import hexlify
 class AddressIndexTest(BitcoinTestFramework):
 
     def setup_chain(self):
-        print("Initializing test directory "+self.options.tmpdir)
+        print(("Initializing test directory "+self.options.tmpdir))
         initialize_chain_clean(self.options.tmpdir, 3)
 
     def setup_network(self):
@@ -253,7 +251,7 @@ class AddressIndexTest(BitcoinTestFramework):
 
         # Ensure the change from that transaction appears
         tx = self.nodes[0].getrawtransaction(txid, 1)
-        change_vout = filter(lambda v: v['valueZat'] != 3 * COIN, tx['vout'])
+        change_vout = [v for v in tx['vout'] if v['valueZat'] != 3 * COIN]
         change = change_vout[0]['scriptPubKey']['addresses'][0]
         bal = self.nodes[2].getaddressbalance(change)
         assert(bal['received'] > 0)
@@ -324,7 +322,7 @@ class AddressIndexTest(BitcoinTestFramework):
         # so for comparison, remove the 4 (and -4 for output) from the
         # deltas list
         deltas = self.nodes[1].getaddressdeltas({'addresses': [addr1]})
-        deltas = filter(lambda d: abs(d['satoshis']) != 4 * COIN, deltas)
+        deltas = [d for d in deltas if abs(d['satoshis']) != 4 * COIN]
         assert_equal(len(utxos), len(deltas))
         for i in range(len(utxos)):
             assert_equal(utxos[i]['address'],   addr1)
@@ -335,13 +333,13 @@ class AddressIndexTest(BitcoinTestFramework):
         # Check that outputs with the same address in the same tx return one txid
         # (can't use createrawtransaction() as it combines duplicate addresses)
         addr = "t2LMJ6Arw9UWBMWvfUr2QLHM4Xd9w53FftS"
-        addressHash = "97643ce74b188f4fb6bbbb285e067a969041caf2".decode('hex')
+        addressHash = b"97643ce74b188f4fb6bbbb285e067a969041caf2"
         scriptPubKey = CScript([OP_HASH160, addressHash, OP_EQUAL])
         # Add an unrecognized script type to vout[], a legal script that pays,
         # but won't modify the addressindex (since the address can't be extracted).
         # (This extra output has no effect on the rest of the test.)
         scriptUnknown = CScript([OP_HASH160, OP_DUP, OP_DROP, addressHash, OP_EQUAL])
-        unspent = filter(lambda u: u['amount'] >= 4, self.nodes[0].listunspent())
+        unspent = [u for u in self.nodes[0].listunspent() if u['amount'] >= 4]
         tx = CTransaction()
         tx.vin = [CTxIn(COutPoint(int(unspent[0]['txid'], 16), unspent[0]['vout']))]
         tx.vout = [
@@ -350,11 +348,14 @@ class AddressIndexTest(BitcoinTestFramework):
             CTxOut(7 * COIN, scriptUnknown),
         ]
         tx = self.nodes[0].signrawtransaction(hexlify(tx.serialize()).decode('utf-8'))
+        print("tx is: %s" % tx)
         txid = self.nodes[0].sendrawtransaction(tx['hex'], True)
+        print("txid is: %s" % txid)
         self.nodes[0].generate(1)
         self.sync_all()
-
-        assert_equal(self.nodes[1].getaddresstxids(addr), [txid])
+        address_txids = self.nodes[1].getaddresstxids(addr)
+        print(address_txids)
+        assert_equal(address_txids, [txid])
         check_balance(2, addr, 3 * COIN)
 
 
