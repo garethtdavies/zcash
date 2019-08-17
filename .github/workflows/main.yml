@@ -20,5 +20,6 @@ jobs:
       run: | 
         - ./zcutil/fetch-params.sh
         - ./src/test/test_bitcoin
+        - ./src/zcash-gtest.exe
     - name: deploy
       run: echo "This is the deployment step"  
