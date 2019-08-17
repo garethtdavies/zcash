@@ -13,9 +13,12 @@ jobs:
       run: |
         sudo apt-get update -y
         sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev unzip git python python-zmq zlib1g-dev wget curl bsdmainutils automake -y 
-    - name: test
-      run: ./qa/zcash/full_test_suite.py
     - name: build
       run: ./zcutil/build.sh -j$(nproc)
+    - name: test
+    #  run: ./qa/zcash/full_test_suite.py
+      run: | 
+        - ./zcutil/fetch-params.sh
+        - ./src/test/test_bitcoin
     - name: deploy
       run: echo "This is the deployment step"  
