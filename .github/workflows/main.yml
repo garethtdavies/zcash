@@ -12,22 +12,10 @@ jobs:
     - name: install-dependencies
       run: |
         sudo apt-get update -y
-        sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev unzip git python python-zmq zlib1g-dev wget curl bsdmainutils automake -y 
+        sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev unzip git python python-zmq zlib1g-dev wget curl bsdmainutils automake install python-pip -y
+        sudo pip install pyblake2
     - name: build
       run: ./zcutil/build.sh -j$(nproc)
-
-  build_macos:
-
-    runs-on: macOS-10.14
-
-    steps:
-    - uses: actions/checkout@v1
-    #- name: install-dependencies
-    #  run: |
-        #/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-        #brew install git pkgconfig automake autoconf wget libtool coreutils
-        #sudo easy_install pip
-        #sudo pip install pyblake2 pyzmq
-    - name: build
-      run: ./zcutil/build.sh -j$(nproc)
+    - name: test
+      run: ./qa/zcash/full_test_suite.py --list-stages
 
