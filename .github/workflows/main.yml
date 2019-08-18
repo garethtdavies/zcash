@@ -22,12 +22,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: install-dependencies
-      run: |
-        /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-        brew install git pkgconfig automake autoconf wget libtool coreutils
-        sudo easy_install pip
-        sudo pip install pyblake2 pyzmq
+    #- name: install-dependencies
+    #  run: |
+        #/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+        #brew install git pkgconfig automake autoconf wget libtool coreutils
+        #sudo easy_install pip
+        #sudo pip install pyblake2 pyzmq
     - name: build
       run: ./zcutil/build.sh -j$(nproc)
 
