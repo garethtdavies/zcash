@@ -24,7 +24,6 @@ jobs:
     - uses: actions/checkout@v1
     - name: install-dependencies
       run: |
-        xcode-select --install
         /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
         brew install git pkgconfig automake autoconf wget libtool coreutils
         sudo easy_install pip
