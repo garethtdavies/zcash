@@ -12,7 +12,7 @@ jobs:
     - name: install-dependencies
       run: |
         sudo apt-get update -y
-        sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev unzip git python python-zmq zlib1g-dev wget curl bsdmainutils automake install python-pip -y
+        sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev unzip git python python-zmq zlib1g-dev wget curl bsdmainutils automake python-pip -y
         sudo pip install pyblake2
     - name: build
       run: ./zcutil/build.sh -j$(nproc)
