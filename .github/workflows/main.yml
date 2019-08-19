@@ -3,8 +3,9 @@ name: CI
 on: [push]
 
 jobs:
-  build_linux_x64:
+  linux_x64:
 
+    # TODO add build matrix for supported OS
     runs-on: ubuntu-18.04
     
     steps:
@@ -13,22 +14,35 @@ jobs:
       run: |
         sudo apt-get update -y
         sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev unzip git python python-zmq zlib1g-dev wget curl bsdmainutils automake python-pip -y
-        sudo pip install pyblake2
+        sudo pip install pyblake2 pyflakes
     - name: build
       run: ./zcutil/build.sh -j$(nproc)
-    - name: test
-      run: |
-        nproc
-        ./zcutil/fetch-params.sh
-        ./qa/zcash/full_test_suite.py --list-stages
-        ./qa/zcash/full_test_suite.py btest
-        ./qa/zcash/full_test_suite.py gtest
-        ./qa/zcash/full_test_suite.py sec-hard
-        ./qa/zcash/full_test_suite.py no-dot-so
-        ./qa/zcash/full_test_suite.py util-test
-        ./qa/zcash/full_test_suite.py secp256k1
-        ./qa/zcash/full_test_suite.py libsnark
-        ./qa/zcash/full_test_suite.py univalue
-        ./qa/zcash/full_test_suite.py rpc
+    - name: pyflakes
+      run: pyflakes qa src zcutil
+    - name: fetch-params
+      run: ./zcutil/fetch-params.sh
+    - name: list-stages
+      run: ./qa/zcash/full_test_suite.py --list-stages
+    - name: btest
+      run: ./qa/zcash/full_test_suite.py btest
+    - name: gtest
+      run: ./qa/zcash/full_test_suite.py gtest
+    - name: sec-hard
+      run: ./qa/zcash/full_test_suite.py sec-hard
+    - name: no-dot-so
+      run: ./qa/zcash/full_test_suite.py no-dot-so
+    - name: util-test
+      run: ./qa/zcash/full_test_suite.py util-test
+    - name: secp256k1
+      run: ./qa/zcash/full_test_suite.py secp256k1
+    - name: libsnark
+      run: ./qa/zcash/full_test_suite.py libsnark
+    - name: univalue
+      run: ./qa/zcash/full_test_suite.py univalue
+    - name: rpc
+      run: ./qa/zcash/full_test_suite.py rpc  
 
-
+# TODO ARM cross-compile
+# TODO MacOS native build
+# TODO Windows cross-compile
+# TODO Run tests on native platforms
