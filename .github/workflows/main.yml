@@ -13,7 +13,7 @@ jobs:
     - name: install-dependencies
       run: |
         sudo apt-get update -y
-        sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev unzip git python python-zmq zlib1g-dev wget curl bsdmainutils automake python-pip -y
+        sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev unzip git python3 python3-zmq zlib1g-dev wget curl bsdmainutils automake python3-pip -y
         sudo pip install pyblake2 pyflakes
     #- name: pyflakes
     #  run: pyflakes qa src zcutil        
