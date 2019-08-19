@@ -15,10 +15,10 @@ jobs:
         sudo apt-get update -y
         sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev unzip git python python-zmq zlib1g-dev wget curl bsdmainutils automake python-pip -y
         sudo pip install pyblake2 pyflakes
+    #- name: pyflakes
+    #  run: pyflakes qa src zcutil        
     - name: build
       run: ./zcutil/build.sh -j$(nproc)
-    - name: pyflakes
-      run: pyflakes qa src zcutil
     - name: fetch-params
       run: ./zcutil/fetch-params.sh
     - name: list-stages
