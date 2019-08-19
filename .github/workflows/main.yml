@@ -18,28 +18,28 @@ jobs:
         sudo pip3 install pyutil pyblake2 pyflakes
     #- name: pyflakes
     #  run: pyflakes qa src zcutil        
-    #- name: build
-    #  run: ./zcutil/build.sh -j$(nproc)
+    - name: build
+      run: ./zcutil/build.sh -j$(nproc)
     - name: fetch-params
       run: ./zcutil/fetch-params.sh
-    #- name: list-stages
-    #  run: ./qa/zcash/full_test_suite.py --list-stages
-    #- name: btest
-    #  run: ./qa/zcash/full_test_suite.py btest
-    #- name: gtest
-    #  run: ./qa/zcash/full_test_suite.py gtest
-    #- name: sec-hard
-    #  run: ./qa/zcash/full_test_suite.py sec-hard
-    #- name: no-dot-so
-    #  run: ./qa/zcash/full_test_suite.py no-dot-so
-    #- name: util-test
-    #  run: ./qa/zcash/full_test_suite.py util-test
-    #- name: secp256k1
-    #  run: ./qa/zcash/full_test_suite.py secp256k1
-    #- name: libsnark
-    #  run: ./qa/zcash/full_test_suite.py libsnark
-    #- name: univalue
-    #  run: ./qa/zcash/full_test_suite.py univalue
+    - name: list-stages
+      run: ./qa/zcash/full_test_suite.py --list-stages
+    - name: btest
+      run: ./qa/zcash/full_test_suite.py btest
+    - name: gtest
+      run: ./qa/zcash/full_test_suite.py gtest
+    - name: sec-hard
+      run: ./qa/zcash/full_test_suite.py sec-hard
+    - name: no-dot-so
+      run: ./qa/zcash/full_test_suite.py no-dot-so
+    - name: util-test
+      run: ./qa/zcash/full_test_suite.py util-test
+    - name: secp256k1
+      run: ./qa/zcash/full_test_suite.py secp256k1
+    - name: libsnark
+      run: ./qa/zcash/full_test_suite.py libsnark
+    - name: univalue
+      run: ./qa/zcash/full_test_suite.py univalue
     - name: rpc
       run: ./qa/zcash/full_test_suite.py rpc  
 
