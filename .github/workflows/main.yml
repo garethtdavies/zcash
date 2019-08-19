@@ -17,5 +17,18 @@ jobs:
     - name: build
       run: ./zcutil/build.sh -j$(nproc)
     - name: test
-      run: ./qa/zcash/full_test_suite.py --list-stages
+      run: |
+        nproc
+        ./zcutil/fetch-params.sh
+        ./qa/zcash/full_test_suite.py --list-stages
+        ./qa/zcash/full_test_suite.py btest
+        ./qa/zcash/full_test_suite.py gtest
+        ./qa/zcash/full_test_suite.py sec-hard
+        ./qa/zcash/full_test_suite.py no-dot-so
+        ./qa/zcash/full_test_suite.py util-test
+        ./qa/zcash/full_test_suite.py secp256k1
+        ./qa/zcash/full_test_suite.py libsnark
+        ./qa/zcash/full_test_suite.py univalue
+        ./qa/zcash/full_test_suite.py rpc
+
 
