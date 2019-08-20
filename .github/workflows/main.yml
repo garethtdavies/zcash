@@ -1,0 +1,24 @@
+name: CI
+
+on: [push]
+
+jobs: 
+
+  mac_os:
+    runs-on: macOS-10.14
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: install-dependencies
+      run: |
+        # note that brew is already installed on GitHub runners
+        brew install git pkgconfig automake autoconf wget libtool coreutils
+        sudo easy_install pip
+        sudo pip install pyblake2 pyzmq     
+    - name: build
+      run: ./zcutil/build.sh -j$(nproc)
+
+# TODO ARM cross-compile
+# TODO MacOS native build
+# TODO Windows cross-compile
+# TODO Run tests on native platforms
