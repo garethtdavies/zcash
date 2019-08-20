@@ -14,7 +14,9 @@ jobs:
         # note that brew is already installed on GitHub runners
         brew install git pkgconfig automake autoconf wget libtool coreutils
         sudo easy_install pip
-        sudo pip install pyblake2 pyzmq     
+        sudo pip install pyblake2 pyzmq
+    - name: workaround
+      run: open /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg         
     - name: build
       run: ./zcutil/build.sh -j$(nproc)
 
