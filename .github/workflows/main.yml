@@ -11,13 +11,13 @@ jobs:
     - uses: actions/checkout@v1
     - name: install-dependencies
       run: |
-        xcode-select --install
-        # note that brew is already installed on GitHub runners
+        # note that xcoda and brew are already installed on GitHub runners
         brew install git pkgconfig automake autoconf wget libtool coreutils
         sudo easy_install pip
         sudo pip install pyblake2 pyzmq
     - name: workaround
-      run: open /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg         
+      # run: open /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg
+        run: sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /         
     - name: build
       run: ./zcutil/build.sh -j$(nproc)
 
