@@ -11,11 +11,11 @@ jobs:
     - uses: actions/checkout@v1
     - name: install-dependencies
       run: |
-        # note that xcoda and brew are already installed on GitHub runners
+        # note that xcode and brew are already installed on GitHub runners (and some of the below can be removed too)
         brew install git pkgconfig automake autoconf wget libtool coreutils
         sudo easy_install pip
         sudo pip install pyblake2 pyzmq
     - name: workaround
       run: sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /         
     - name: build
-      run: ./zcutil/build.sh -j$(nproc)
+      run: CONFIGURE_FLAGS='--enable-debug' ./zcutil/build.sh -j$(nproc)
