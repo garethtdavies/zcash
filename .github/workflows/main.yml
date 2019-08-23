@@ -1,21 +1,51 @@
 name: CI
 
-on: [push]
+on: [push, pull_request]
 
-jobs: 
-
-  mac_os:
-    runs-on: macOS-10.14
-    
+jobs:
+  linux_native:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-16.04, ubuntu-18.04]
     steps:
-    - uses: actions/checkout@v1
-    - name: install-dependencies
-      run: |
-        # note that xcode and brew are already installed on GitHub runners (and some of the below can be removed too)
-        brew install git pkgconfig automake autoconf wget libtool coreutils
-        sudo easy_install pip
-        sudo pip install pyblake2 pyzmq
-    - name: workaround
-      run: sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /         
-    - name: build
-      run: CONFIGURE_FLAGS='--enable-debug' ./zcutil/build.sh -j$(nproc)
+      - uses: actions/checkout@v1
+
+  mac_os_native:
+    runs-on: macOS-10.14
+    steps:
+      - uses: actions/checkout@v1
+      - name: install-dependencies
+        run: |
+          # note that xcode and brew are already installed on GitHub runners (and some of the below can be removed too)
+          brew install git pkgconfig automake autoconf wget libtool coreutils
+          sudo easy_install pip
+          sudo pip install pyblake2 pyzmq
+      - name: workaround
+        run: sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
+      - name: build
+        run: CONFIGURE_FLAGS='--enable-debug' ./zcutil/build.sh -j$(nproc)
+
+  mac_os_cross_compile:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-16.04, ubuntu-18.04]
+    steps:
+      - uses: actions/checkout@v1
+
+  windows_cross_compile:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-16.04, ubuntu-18.04]
+    steps:
+      - uses: actions/checkout@v1
+
+  arm_cross_compile:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-16.04, ubuntu-18.04]
+    steps:
+      - uses: actions/checkout@v1
