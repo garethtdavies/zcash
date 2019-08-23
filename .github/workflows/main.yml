@@ -1,0 +1,96 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  linux_native:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-16.04, ubuntu-18.04]
+    steps:
+      - uses: actions/checkout@v1
+      - name: install-dependencies
+        run: |
+          sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev unzip git python python-zmq zlib1g-dev wget curl bsdmainutils automake -y
+          sudo apt-get install python-pip -y
+          sudo pip install pyblake2
+      - name: build
+        run: ./zcutil/build.sh -j$(nproc)
+
+  mac_os_native:
+    runs-on: macOS-10.14
+    steps:
+      - uses: actions/checkout@v1
+      - name: install-dependencies
+        run: |
+          # note that xcode and brew are already installed on GitHub runners (and some of the below can be removed too)
+          brew install git pkgconfig automake autoconf wget libtool coreutils
+          sudo easy_install pip
+          sudo pip install pyblake2 pyzmq
+      - name: workaround
+        run: sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
+      - name: build
+        run: ./zcutil/build.sh -j$(nproc)
+
+  mac_os_cross_compile:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-16.04, ubuntu-18.04]
+    steps:
+      - uses: actions/checkout@v1
+      - name: install-dependencies
+        run: |
+          sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev unzip git python python-zmq zlib1g-dev wget curl bsdmainutils automake xz-utils -y
+          sudo apt-get install python-pip -y
+          sudo pip install pyblake2
+      - name: install-sdk
+        run: |
+          wget https://github.com/phracker/MacOSX-SDKs/releases/download/MacOSX10.11.sdk/MacOSX10.11.sdk.tar.xz
+          sudo mkdir -p /depends/SDKs
+          sudo tar xf MacOSX10.11.sdk.tar.xz --directory /depends/SDKs
+      - name: build
+        run: HOST=x86_64-apple-darwin11 ./zcutil/build.sh
+
+  windows_cross_compile:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-16.04, ubuntu-18.04]
+    steps:
+      - uses: actions/checkout@v1
+      - name: install-dependencies
+        run: |
+          sudo apt-get install \
+          build-essential pkg-config libc6-dev m4 g++-multilib \
+          autoconf libtool ncurses-dev unzip git python python-zmq \
+          zlib1g-dev wget curl bsdmainutils automake -y
+          sudo apt-get install mingw-w64 -y
+          sudo apt-get install python-pip -y
+          sudo pip install pyblake2
+      - name: update-alternatives
+        run: |
+          sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
+          sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+      - name: build
+        run: HOST=x86_64-w64-mingw32 ./zcutil/build.sh -j$(nproc)
+
+  arm_cross_compile:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-16.04, ubuntu-18.04]
+    steps:
+      - uses: actions/checkout@v1
+      - name: install-dependencies
+        run: |
+          sudo apt-get install \
+          build-essential pkg-config libc6-dev m4 g++-multilib \
+          autoconf libtool ncurses-dev unzip git python python-zmq \
+          zlib1g-dev wget curl bsdmainutils automake -y
+          sudo apt-get install g++-aarch64-linux-gnu -y
+          sudo apt-get install python-pip -y
+          sudo pip install pyblake2
+      - name: build
+        run: HOST=aarch64-linux-gnu ./zcutil/build.sh -j$(nproc)
