@@ -10,6 +10,13 @@ jobs:
         os: [ubuntu-16.04, ubuntu-18.04]
     steps:
       - uses: actions/checkout@v1
+      - name: install-dependencies
+        run: |
+          sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev unzip git python python-zmq zlib1g-dev wget curl bsdmainutils automake -y
+          sudo apt-get install python-pip -y
+          sudo pip install pyblake2
+      - name: build
+        run: ./zcutil/build.sh -j$(nproc)
 
   mac_os_native:
     runs-on: macOS-10.14
@@ -24,7 +31,7 @@ jobs:
       - name: workaround
         run: sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
       - name: build
-        run: CONFIGURE_FLAGS='--enable-debug' ./zcutil/build.sh -j$(nproc)
+        run: ./zcutil/build.sh -j$(nproc)
 
   mac_os_cross_compile:
     runs-on: ${{ matrix.os }}
@@ -41,6 +48,21 @@ jobs:
         os: [ubuntu-16.04, ubuntu-18.04]
     steps:
       - uses: actions/checkout@v1
+      - name: install-dependencies
+        run: |
+          sudo apt-get install \
+          build-essential pkg-config libc6-dev m4 g++-multilib \
+          autoconf libtool ncurses-dev unzip git python python-zmq \
+          zlib1g-dev wget curl bsdmainutils automake -y
+          sudo apt-get install mingw-w64 -y
+          sudo apt-get install python-pip -y
+          sudo pip install pyblake2
+      - name: update-alternatives
+        run: |
+          sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
+          sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+      - name: build
+        run: HOST=x86_64-w64-mingw32 ./zcutil/build.sh -j$(nproc)
 
   arm_cross_compile:
     runs-on: ${{ matrix.os }}
@@ -49,3 +71,14 @@ jobs:
         os: [ubuntu-16.04, ubuntu-18.04]
     steps:
       - uses: actions/checkout@v1
+      - name: install-dependencies
+        run: |
+          sudo apt-get install \
+          build-essential pkg-config libc6-dev m4 g++-multilib \
+          autoconf libtool ncurses-dev unzip git python python-zmq \
+          zlib1g-dev wget curl bsdmainutils automake -y
+          sudo apt-get install g++-aarch64-linux-gnu -y
+          sudo apt-get install python-pip -y
+          sudo pip install pyblake2
+      - name: build
+        run: HOST=aarch64-linux-gnu ./zcutil/build.sh -j$(nproc)
