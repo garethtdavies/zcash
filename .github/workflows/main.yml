@@ -48,8 +48,8 @@ jobs:
       - name: install-sdk
         run: |
           wget https://github.com/phracker/MacOSX-SDKs/releases/download/MacOSX10.11.sdk/MacOSX10.11.sdk.tar.xz
-          mkdir -p /depends/SDKs
-          tar xf MacOSX10.11.sdk.tar.xz --directory /depends/SDKs
+          sudo mkdir -p /depends/SDKs
+          sudo tar xf MacOSX10.11.sdk.tar.xz --directory /depends/SDKs
       - name: build
         run: HOST=x86_64-apple-darwin11 ./zcutil/build.sh
 
