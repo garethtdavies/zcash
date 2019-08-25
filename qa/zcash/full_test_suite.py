@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 #
 # Execute all of the automated tests related to Zcash.
 #
@@ -26,9 +26,9 @@ def repofile(filename):
 # Custom test runners
 #
 
-RE_RPATH_RUNPATH = re.compile('No RPATH.*No RUNPATH')
-RE_FORTIFY_AVAILABLE = re.compile('FORTIFY_SOURCE support available.*Yes')
-RE_FORTIFY_USED = re.compile('Binary compiled with FORTIFY_SOURCE support.*Yes')
+RE_RPATH_RUNPATH = re.compile(b'No RPATH.*No RUNPATH')
+RE_FORTIFY_AVAILABLE = re.compile(b'FORTIFY_SOURCE support available.*Yes')
+RE_FORTIFY_USED = re.compile(b'Binary compiled with FORTIFY_SOURCE support.*Yes')
 
 def test_rpath_runpath(filename):
     output = subprocess.check_output(
@@ -104,18 +104,18 @@ def ensure_no_dot_so_in_depends():
 
         for lib in libraries:
             if lib.find(".so") != -1:
-                print lib
+                print(lib)
                 exit_code = 1
     else:
         exit_code = 2
-        print "arch-specific build dir not present"
-        print "Did you build the ./depends tree?"
-        print "Are you on a currently unsupported architecture?"
+        print("arch-specific build dir not present")
+        print("Did you build the ./depends tree?")
+        print("Are you on a currently unsupported architecture?")
 
     if exit_code == 0:
-        print "PASS."
+        print("PASS.")
     else:
-        print "FAIL."
+        print("FAIL.")
 
     return exit_code == 0
 
@@ -140,7 +140,12 @@ STAGES = [
     'secp256k1',
     'libsnark',
     'univalue',
-    'rpc',
+    'rpc1',
+    'rpc2',
+    'rpc3',
+    'rpc4',
+    'rpc5',
+    'rpc6',
 ]
 
 STAGE_COMMANDS = {
@@ -152,7 +157,12 @@ STAGE_COMMANDS = {
     'secp256k1': ['make', '-C', repofile('src/secp256k1'), 'check'],
     'libsnark': ['make', '-C', repofile('src'), 'libsnark-tests'],
     'univalue': ['make', '-C', repofile('src/univalue'), 'check'],
-    'rpc': [repofile('qa/pull-tester/rpc-tests.sh')],
+    'rpc1': [repofile('qa/pull-tester/rpc-tests_01.sh')],
+    'rpc2': [repofile('qa/pull-tester/rpc-tests_02.sh')],
+    'rpc3': [repofile('qa/pull-tester/rpc-tests_03.sh')],
+    'rpc4': [repofile('qa/pull-tester/rpc-tests_04.sh')],
+    'rpc5': [repofile('qa/pull-tester/rpc-tests_05.sh')],
+    'rpc6': [repofile('qa/pull-tester/rpc-tests_06.sh')],
 }
 
 
@@ -163,7 +173,7 @@ STAGE_COMMANDS = {
 def run_stage(stage):
     print('Running stage %s' % stage)
     print('=' * (len(stage) + 14))
-    print
+    print()
 
     cmd = STAGE_COMMANDS[stage]
     if type(cmd) == type([]):
@@ -171,10 +181,10 @@ def run_stage(stage):
     else:
         ret = cmd()
 
-    print
+    print()
     print('-' * (len(stage) + 15))
     print('Finished stage %s' % stage)
-    print
+    print()
 
     return ret
 

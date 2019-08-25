@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://www.opensource.org/licenses/mit-license.php .
 #
 
-import sys; assert sys.version_info < (3,), ur"This script does not run under Python 3. Please use Python 2.7.x."
+
 
 from test_framework.test_framework import ComparisonTestFramework
 from test_framework.util import start_nodes
@@ -13,7 +13,7 @@ from test_framework.blocktools import create_coinbase, create_block
 from test_framework.comptool import TestInstance, TestManager
 from test_framework.script import CScript
 from binascii import unhexlify
-import cStringIO
+import io
 
 
 '''
@@ -49,7 +49,7 @@ class BIP66Test(ComparisonTestFramework):
         rawtx = node.createrawtransaction(inputs, outputs)
         signresult = node.signrawtransaction(rawtx)
         tx = CTransaction()
-        f = cStringIO.StringIO(unhexlify(signresult['hex']))
+        f = io.BytesIO(unhexlify(signresult['hex']))
         tx.deserialize(f)
         return tx
 
@@ -73,7 +73,7 @@ class BIP66Test(ComparisonTestFramework):
     def get_tests(self):
         self.coinbase_blocks = self.nodes[0].generate(1)
         self.nodes[0].generate(100)
-        self.tip = int ("0x" + self.nodes[0].getbestblockhash() + "L", 0)
+        self.tip = int ("0x" + self.nodes[0].getbestblockhash(), 0)
         self.nodeaddress = self.nodes[0].getnewaddress()
 
         '''Check that the rules are enforced.'''

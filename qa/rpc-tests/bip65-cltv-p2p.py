@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://www.opensource.org/licenses/mit-license.php .
 #
 
-import sys; assert sys.version_info < (3,), ur"This script does not run under Python 3. Please use Python 2.7.x."
+
 
 from test_framework.test_framework import ComparisonTestFramework
 from test_framework.util import start_nodes
@@ -13,7 +13,7 @@ from test_framework.blocktools import create_coinbase, create_block
 from test_framework.comptool import TestInstance, TestManager
 from test_framework.script import CScript, OP_1NEGATE, OP_NOP2, OP_DROP
 from binascii import unhexlify
-import cStringIO
+import io
 
 
 '''
@@ -38,10 +38,10 @@ class BIP65Test(ComparisonTestFramework):
         self.is_network_split = False
 
     def run_test(self):
-        test = TestManager(self, self.options.tmpdir)
-        test.add_all_connections(self.nodes)
+        test_manager = TestManager(self, self.options.tmpdir)
+        test_manager.add_all_connections(self.nodes)
         NetworkThread().start() # Start up network handling in another thread
-        test.run()
+        test_manager.run()
 
     def create_transaction(self, node, coinbase, to_address, amount):
         from_txid = node.getblock(coinbase)['tx'][0]
@@ -50,7 +50,7 @@ class BIP65Test(ComparisonTestFramework):
         rawtx = node.createrawtransaction(inputs, outputs)
         signresult = node.signrawtransaction(rawtx)
         tx = CTransaction()
-        f = cStringIO.StringIO(unhexlify(signresult['hex']))
+        f = io.BytesIO(unhexlify(signresult['hex']))
         tx.deserialize(f)
         return tx
 
@@ -66,7 +66,7 @@ class BIP65Test(ComparisonTestFramework):
     def get_tests(self):
         self.coinbase_blocks = self.nodes[0].generate(1)
         self.nodes[0].generate(100)
-        self.tip = int ("0x" + self.nodes[0].getbestblockhash() + "L", 0)
+        self.tip = int ("0x" + self.nodes[0].getbestblockhash(), 0)
         self.nodeaddress = self.nodes[0].getnewaddress()
 
         '''Check that the rules are enforced.'''

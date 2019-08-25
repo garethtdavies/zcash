@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2014 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://www.opensource.org/licenses/mit-license.php .
 
-import sys; assert sys.version_info < (3,), ur"This script does not run under Python 3. Please use Python 2.7.x."
+
 
 from test_framework.test_framework import BitcoinTestFramework
 from test_framework.authproxy import JSONRPCException
@@ -17,7 +17,7 @@ from decimal import Decimal
 class RawTransactionsTest(BitcoinTestFramework):
 
     def setup_chain(self):
-        print("Initializing test directory "+self.options.tmpdir)
+        print(("Initializing test directory "+self.options.tmpdir))
         initialize_chain_clean(self.options.tmpdir, 3)
 
     def setup_network(self, split=False):
@@ -32,8 +32,8 @@ class RawTransactionsTest(BitcoinTestFramework):
         self.sync_all()
 
     def run_test(self):
-        print "Mining blocks..."
-        feeTolerance = Decimal(0.00000002) #if the fee's positive delta is higher than this value tests will fail, neg. delta always fail the tests
+        print("Mining blocks...")
+        feeTolerance = Decimal("0.00000002") #if the fee's positive delta is higher than this value tests will fail, neg. delta always fail the tests
 
         self.nodes[2].generate(1)
         self.sync_all()
@@ -145,9 +145,8 @@ class RawTransactionsTest(BitcoinTestFramework):
                 break;
 
         assert_equal(utx!=False, True)
-
         inputs  = [ {'txid' : utx['txid'], 'vout' : utx['vout']}]
-        outputs = { self.nodes[0].getnewaddress() : Decimal(5.0) - fee - feeTolerance }
+        outputs = { self.nodes[0].getnewaddress() : Decimal("5.0") - fee - feeTolerance }
         rawtx   = self.nodes[2].createrawtransaction(inputs, outputs)
         dec_tx  = self.nodes[2].decoderawtransaction(rawtx)
         assert_equal(utx['txid'], dec_tx['vin'][0]['txid'])
@@ -194,7 +193,7 @@ class RawTransactionsTest(BitcoinTestFramework):
         matchingOuts = 0
         for i, out in enumerate(dec_tx['vout']):
             totalOut += out['value']
-            if outputs.has_key(out['scriptPubKey']['addresses'][0]):
+            if out['scriptPubKey']['addresses'][0] in outputs:
                 matchingOuts+=1
             else:
                 assert_equal(i, rawtxfund['changepos'])
@@ -234,7 +233,7 @@ class RawTransactionsTest(BitcoinTestFramework):
         matchingOuts = 0
         for out in dec_tx['vout']:
             totalOut += out['value']
-            if outputs.has_key(out['scriptPubKey']['addresses'][0]):
+            if out['scriptPubKey']['addresses'][0] in outputs:
                 matchingOuts+=1
 
         assert_equal(matchingOuts, 1)
@@ -276,7 +275,7 @@ class RawTransactionsTest(BitcoinTestFramework):
         matchingOuts = 0
         for out in dec_tx['vout']:
             totalOut += out['value']
-            if outputs.has_key(out['scriptPubKey']['addresses'][0]):
+            if out['scriptPubKey']['addresses'][0] in outputs:
                 matchingOuts+=1
 
         assert_equal(matchingOuts, 2)
@@ -294,7 +293,7 @@ class RawTransactionsTest(BitcoinTestFramework):
         errorString = ""
         try:
             rawtxfund = self.nodes[2].fundrawtransaction(rawtx)
-        except JSONRPCException,e:
+        except JSONRPCException as e:
             errorString = e.error['message']
 
         assert_equal("Insufficient" in errorString, True);
