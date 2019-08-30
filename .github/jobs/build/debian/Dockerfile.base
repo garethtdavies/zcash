@@ -16,19 +16,12 @@ RUN     apt-get update && \
                            wget \
                            curl \
                            bsdmainutils \
-                           automake \
-                           vim \
-                           psmisc \
-                           apt-file \
-                           netcat
-RUN     pip3 install pyblake2 pyzmq pyutil python-qpid-proton simplejson
-RUN     git clone https://github.com/zcash/zcash.git
-WORKDIR /zcash
-RUN     git remote add gtd https://github.com/garethtdavies/zcash.git && git fetch --all && \
-        git checkout -B 3802_squashed gtd/3802_squashed
-RUN     ./zcutil/fetch-params.sh --testnet
-RUN     ./zcutil/build.sh -j$(nproc)
-RUN     mkdir /root/.zcash/ && touch /root/.zcash/zcash.conf
-RUN     ln -sf /usr/bin/python3 /usr/bin/python && \
-        ln -sf /usr/bin/pip3 /usr/bin/pip
-RUN     git remote add za_github https://github.com/zancas/zcash.git && git fetch --all && git checkout -b iocr za_github/iterate_on_container_runs && make
+                           automake && \
+rm -rf /var/lib/apt/lists/* && \
+pip3 install pyblake2 pyzmq pyutil python-qpid-proton simplejson && \
+git clone https://github.com/zcash/zcash.git && cd ./zcash && \
+./zcutil/fetch-params.sh --testnet && \
+./zcutil/build.sh -j$(nproc) && \
+mkdir /root/.zcash/ && touch /root/.zcash/zcash.conf && \
+ln -sf /usr/bin/python3 /usr/bin/python && \
+ln -sf /usr/bin/pip3 /usr/bin/pip
