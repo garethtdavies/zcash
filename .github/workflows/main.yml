@@ -1,89 +1,60 @@
 name: CI
 
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
+  linux_x64_build:
+    runs-on: ubuntu-16.04
+    steps:
+     - name: checkout
+       uses: actions/checkout@master
+     - name: build
+       run: docker build -t zingolabs/zcashdebian -f .github/jobs/build/debian/Dockerfile.newcommit .
+     - name: sanity_check_docker_images
+       run: docker images
+     - name: look
+       run: echo ${GITHUB_WORKSPACE} && ls -la ${GITHUB_WORKSPACE}
+     - name: save_build_image
+       run: docker save -o ${GITHUB_WORKSPACE}/zingolabs_zcashdebian.tar zingolabs/zcashdebian
   linux_x64_btest:
+    container: zingolabs/zcashdebian
+    runs-on: ubuntu-16.04
+    needs: linux_x64_build
+    steps:
+     - name: checkout
+       uses: actions/checkout@master
+     - name: sanity_check_docker_images
+       run: docker images
+     - name: look
+       run: echo ${GITHUB_WORKSPACE} && ls -la ${GITHUB_WORKSPACE}
+     - name: load_build_image
+       run: docker load -i ${GITHUB_WORKSPACE}/zingolabs_zcashdebian.tar
+     - name: run_image
+       run: docker run zingolabs_zcashdebian
+  one:
     runs-on: ubuntu-16.04
     steps:
-    - uses: docker://zingolabs/zcashdebian:latest
-    - name: btest
-      run: docker run zingolabs/zcashdebian:latest ./qa/zcash/full_test_suite.py btest
-  linux_x64_gtest:
-    runs-on: ubuntu-16.04
-    steps:
-    - uses: docker://zingolabs/zcashdebian:latest
-    - name: gtest
-      run: docker run zingolabs/zcashdebian:latest ./qa/zcash/full_test_suite.py gtest
-  linux_x64_sec-hard:
-    runs-on: ubuntu-16.04
-    steps:
-    - uses: docker://zingolabs/zcashdebian:latest
-    - name: sec-hard
-      run: docker run zingolabs/zcashdebian:latest ./qa/zcash/full_test_suite.py sec-hard
-  linux_x64_not-dot-so:
-    runs-on: ubuntu-16.04
-    steps:
-    - uses: docker://zingolabs/zcashdebian:latest
-    - name: no-dot-so
-      run: docker run zingolabs/zcashdebian:latest ./qa/zcash/full_test_suite.py no-dot-so
-  linux_x64_util-test:
-    runs-on: ubuntu-16.04
-    steps:
-    - uses: docker://zingolabs/zcashdebian:latest
-    - name: util-test
-      run: docker run zingolabs/zcashdebian:latest ./qa/zcash/full_test_suite.py util-test
-  linux_x64_secp256k1:
-    runs-on: ubuntu-16.04
-    steps:
-    - uses: docker://zingolabs/zcashdebian:latest
-    - name: secp256k1
-      run: docker run zingolabs/zcashdebian:latest ./qa/zcash/full_test_suite.py secp256k1
-  linux_x64_libsnark:
-    runs-on: ubuntu-16.04
-    steps:
-    - uses: docker://zingolabs/zcashdebian:latest
-    - name: libsnark
-      run: docker run zingolabs/zcashdebian:latest ./qa/zcash/full_test_suite.py libsnark
-  linux_x64_unival:
-    runs-on: ubuntu-16.04
-    steps:
-    - uses: docker://zingolabs/zcashdebian:latest
-    - name: univalue
-      run: docker run zingolabs/zcashdebian:latest ./qa/zcash/full_test_suite.py univalue
-  linux_x64_rpc1:
-    runs-on: ubuntu-16.04
-    steps:
-    - uses: docker://zingolabs/zcashdebian:latest
-    - name: rpc1
-      run: docker run zingolabs/zcashdebian:latest ./qa/zcash/full_test_suite.py rpc1
-  linux_x64_rpc2:
-    runs-on: ubuntu-16.04
-    steps:
-    - uses: docker://zingolabs/zcashdebian:latest
-    - name: rpc2
-      run: docker run zingolabs/zcashdebian:latest ./qa/zcash/full_test_suite.py rpc2
-  linux_x64_rpc3:
-    runs-on: ubuntu-16.04
-    steps:
-    - uses: docker://zingolabs/zcashdebian:latest
-    - name: rpc3
-      run: docker run zingolabs/zcashdebian:latest ./qa/zcash/full_test_suite.py rpc3
-  linux_x64_rpc4:
-    runs-on: ubuntu-16.04
-    steps:
-    - uses: docker://zingolabs/zcashdebian:latest
-    - name: rpc4
-      run: docker run zingolabs/zcashdebian:latest ./qa/zcash/full_test_suite.py rpc4
-  linux_x64_rpc5:
-    runs-on: ubuntu-16.04
-    steps:
-    - uses: docker://zingolabs/zcashdebian:latest
-    - name: rpc5
-      run: docker run zingolabs/zcashdebian:latest ./qa/zcash/full_test_suite.py rpc5
-  linux_x64_rpc6:
-    runs-on: ubuntu-16.04
-    steps:
-    - uses: docker://zingolabs/zcashdebian:latest
-    - name: rpc6
-      run: docker run zingolabs/zcashdebian:latest ./qa/zcash/full_test_suite.py rpc6
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: Dump job context
+        env:
+          JOB_CONTEXT: ${{ toJson(job) }}
+        run: echo "$JOB_CONTEXT"
+      - name: Dump steps context
+        env:
+          STEPS_CONTEXT: ${{ toJson(steps) }}
+        run: echo "$STEPS_CONTEXT"
+      - name: Dump runner context
+        env:
+          RUNNER_CONTEXT: ${{ toJson(runner) }}
+        run: echo "$RUNNER_CONTEXT"
+      - name: Dump strategy context
+        env:
+          STRATEGY_CONTEXT: ${{ toJson(strategy) }}
+        run: echo "$STRATEGY_CONTEXT"
+      - name: Dump matrix context
+        env:
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
+        run: echo "$MATRIX_CONTEXT"
